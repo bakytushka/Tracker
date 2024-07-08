@@ -8,9 +8,15 @@
 import UIKit
 
 final class TrackersViewController: UIViewController {
+    
     private var categories: [TrackerCategory] = []
     private var completedTrackers: [TrackerRecord] = []
     private var currentСategories: [TrackerCategory] = []
+    
+    private let collectionView = UICollectionView(
+        frame: .zero,
+        collectionViewLayout: UICollectionViewLayout()
+    )
     
     private var stubImageView = UIImageView()
     private var stubLabel = UILabel()
@@ -19,7 +25,7 @@ final class TrackersViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
- 
+        
         view.backgroundColor = UIColor.white
         setupNaviBar()
         setUpStubImage()
@@ -70,6 +76,22 @@ final class TrackersViewController: UIViewController {
         datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
     }
     
+    private func setUpcollectionView() {
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.register(TrackersViewCell.self, forCellWithReuseIdentifier: "cell")
+        view.addSubview(collectionView)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 16)
+            
+        ])
+    }
+    
     private func setUpStubLabel() {
         stubLabel.text = "Что будем отслеживать?"
         stubLabel.font = UIFont.systemFont(ofSize: 12)
@@ -86,4 +108,22 @@ final class TrackersViewController: UIViewController {
     @objc
     private func addTracker() {
     }
+}
+
+
+extension TrackersViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        currentСategories.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+        cell.contentView.backgroundColor = .red
+        return cell
+        
+    }
+}
+
+extension TrackersViewController: UICollectionViewDelegate {
+    
 }

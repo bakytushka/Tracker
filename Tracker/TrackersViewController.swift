@@ -8,51 +8,32 @@
 import UIKit
 
 final class TrackersViewController: UIViewController {
-    private var trackersLabel = UILabel()
-    private var addTrackerButton = UIButton()
+    private var categories: [TrackerCategory] = []
+    private var completedTrackers: [TrackerRecord] = []
+    private var currentСategories: [TrackerCategory] = []
+    
     private var stubImageView = UIImageView()
     private var stubLabel = UILabel()
     
+    let datePicker = UIDatePicker()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+ 
         view.backgroundColor = UIColor.white
-        setUpTrackersLabel()
-        setUpAddTrackerButton()
+        setupNaviBar()
         setUpStubImage()
         setUpStubLabel()
     }
     
-    private func setUpTrackersLabel() {
-        trackersLabel.text = "Трекеры"
-        trackersLabel.font = UIFont.boldSystemFont(ofSize: 34)
-        
-        trackersLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(trackersLabel)
-        
-        NSLayoutConstraint.activate([
-            trackersLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            trackersLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 88)
-        ])
+    @objc func datePickerValueChanged(_ sender: UIDatePicker) {
+        let selectedDate = sender.date
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd.MM.yyyy"
+        let formattedDate = dateFormatter.string(from: selectedDate)
+        print("Выбранная дата: \(formattedDate)")
     }
     
-    private func setUpAddTrackerButton() {
-        addTrackerButton = UIButton.systemButton(
-            with: UIImage(named: "Add tracker")!,
-            target: self,
-            action: #selector(didTapButton)
-        )
-        addTrackerButton.tintColor = UIColor.black
-        addTrackerButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(addTrackerButton)
-        
-        NSLayoutConstraint.activate([
-            addTrackerButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 6),
-            addTrackerButton.heightAnchor.constraint(equalToConstant: 42),
-            addTrackerButton.widthAnchor.constraint(equalToConstant: 42),
-            addTrackerButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 45),
-        ])
-    }
     private func setUpStubImage() {
         stubImageView.image = UIImage(named: "stub")!
         stubImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -63,6 +44,30 @@ final class TrackersViewController: UIViewController {
             stubImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             stubImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
+        
+    }
+    private func setupNaviBar() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.title = "Трекеры"
+        
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.automaticallyShowsCancelButton = true
+        navigationItem.searchController = searchController
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTracker))
+        navigationItem.leftBarButtonItem?.tintColor = .black
+        
+        let currentDate = Date()
+        let calendar = Calendar.current
+        let minDate = calendar.date(byAdding: .year, value: -10, to: currentDate)
+        let maxDate = calendar.date(byAdding: .year, value: 10, to: currentDate)
+        datePicker.minimumDate = minDate
+        datePicker.maximumDate = maxDate
+        
+        datePicker.preferredDatePickerStyle = .compact
+        datePicker.datePickerMode = .date
+        datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
     }
     
     private func setUpStubLabel() {
@@ -76,9 +81,9 @@ final class TrackersViewController: UIViewController {
             stubLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             stubLabel.topAnchor.constraint(equalTo: stubImageView.bottomAnchor, constant: 8)
         ])
-        
     }
+    
     @objc
-    private func didTapButton() {
+    private func addTracker() {
     }
 }

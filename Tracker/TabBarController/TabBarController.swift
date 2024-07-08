@@ -13,8 +13,7 @@ final class TabBarController: UITabBarController {
         super.viewDidLoad()
         createTabBarController()
     }
-        
-    //    let storyboard = UIStoryboard(name: "Main", bundle: .main)
+
     private func createTabBarController() {
         let trackersViewController = UINavigationController(rootViewController: TrackersViewController())
         trackersViewController.tabBarItem = UITabBarItem(
@@ -23,13 +22,12 @@ final class TabBarController: UITabBarController {
             selectedImage: nil
         )
         
-        let statisticViewController = UINavigationController(rootViewController: TrackersViewController())
+        let statisticViewController = UINavigationController(rootViewController: StatisticViewController())
         statisticViewController.tabBarItem = UITabBarItem(
             title: "Статистика",
             image: UIImage(systemName: "hare.fill"),
             selectedImage: nil
         )
-        
         viewControllers = [trackersViewController, statisticViewController]
     }
 }

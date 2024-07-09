@@ -19,6 +19,7 @@
 		8ABD89892C3366BF003A0625 /* TrackerRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ABD89882C3366BF003A0625 /* TrackerRecord.swift */; };
 		8ABD898B2C3774A5003A0625 /* StatisticViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ABD898A2C3774A5003A0625 /* StatisticViewController.swift */; };
 		8ABD898D2C3C366F003A0625 /* TrackersViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ABD898C2C3C366F003A0625 /* TrackersViewCell.swift */; };
+		8ABD89912C3D8829003A0625 /* HeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ABD89902C3D8829003A0625 /* HeaderViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		8ABD89882C3366BF003A0625 /* TrackerRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerRecord.swift; sourceTree = "<group>"; };
 		8ABD898A2C3774A5003A0625 /* StatisticViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticViewController.swift; sourceTree = "<group>"; };
 		8ABD898C2C3C366F003A0625 /* TrackersViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackersViewCell.swift; sourceTree = "<group>"; };
+		8ABD89902C3D8829003A0625 /* HeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +75,7 @@
 				8A4119502C31951000FD294C /* ViewController.swift */,
 				8A4119602C31A7AE00FD294C /* TrackersViewController.swift */,
 				8ABD898C2C3C366F003A0625 /* TrackersViewCell.swift */,
+				8ABD89902C3D8829003A0625 /* HeaderViewController.swift */,
 				8ABD898A2C3774A5003A0625 /* StatisticViewController.swift */,
 				8A4119622C31BD2500FD294C /* TabBarController */,
 				8A4119552C31951200FD294C /* Assets.xcassets */,
@@ -177,6 +180,7 @@
 				8A4119512C31951000FD294C /* ViewController.swift in Sources */,
 				8A4119642C31BD4B00FD294C /* TabBarController.swift in Sources */,
 				8A41194D2C31951000FD294C /* AppDelegate.swift in Sources */,
+				8ABD89912C3D8829003A0625 /* HeaderViewController.swift in Sources */,
 				8A41194F2C31951000FD294C /* SceneDelegate.swift in Sources */,
 				8ABD898B2C3774A5003A0625 /* StatisticViewController.swift in Sources */,
 				8A4119612C31A7AF00FD294C /* TrackersViewController.swift in Sources */,

@@ -13,10 +13,10 @@ struct Tracker {
     let name: String
     let color: UIColor
     let emoji: String
-    let schedule: [Schedule]
+    let schedule: Schedule
 }
 
-enum Schedule: Equatable {
+enum Schedule {
     case monday
     case tuesday
     case wednesday

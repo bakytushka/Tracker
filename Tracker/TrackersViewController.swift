@@ -38,10 +38,15 @@ final class TrackersViewController: UIViewController {
     private var completedTrackers: [TrackerRecord] = []
     private var currentСategories: [TrackerCategory] = []
     
-    private let collectionView = UICollectionView(
+        private let collectionView = UICollectionView(
         frame: .zero,
-        collectionViewLayout: UICollectionViewLayout()
+        collectionViewLayout: UICollectionViewFlowLayout()
     )
+        /*  private let collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        return collectionView
+    }()*/
     
     private var stubImageView = UIImageView()
     private var stubLabel = UILabel()

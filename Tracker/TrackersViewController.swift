@@ -38,15 +38,15 @@ final class TrackersViewController: UIViewController {
     private var completedTrackers: [TrackerRecord] = []
     private var currentСategories: [TrackerCategory] = []
     
-        private let collectionView = UICollectionView(
+    private let collectionView = UICollectionView(
         frame: .zero,
         collectionViewLayout: UICollectionViewFlowLayout()
     )
-        /*  private let collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        return collectionView
-    }()*/
+    /*  private let collectionView: UICollectionView = {
+     let layout = UICollectionViewFlowLayout()
+     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+     return collectionView
+     }()*/
     
     private var stubImageView = UIImageView()
     private var stubLabel = UILabel()
@@ -170,6 +170,12 @@ final class TrackersViewController: UIViewController {
     
     @objc
     private func addTracker() {
+        let newViewController = NewTrackersViewController()
+            newViewController.navigationItem.title = "Создание трекера"
+        navigationController?.isNavigationBarHidden = false
+            
+            let navigationController = UINavigationController(rootViewController: newViewController)
+            self.present(navigationController, animated: true, completion: nil)
     }
 }
 

@@ -20,6 +20,7 @@
 		8ABD898B2C3774A5003A0625 /* StatisticViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ABD898A2C3774A5003A0625 /* StatisticViewController.swift */; };
 		8ABD898D2C3C366F003A0625 /* TrackersViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ABD898C2C3C366F003A0625 /* TrackersViewCell.swift */; };
 		8ABD89912C3D8829003A0625 /* HeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ABD89902C3D8829003A0625 /* HeaderViewController.swift */; };
+		8ABD89932C4034D5003A0625 /* NewTrackersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ABD89922C4034D5003A0625 /* NewTrackersViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		8ABD898A2C3774A5003A0625 /* StatisticViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticViewController.swift; sourceTree = "<group>"; };
 		8ABD898C2C3C366F003A0625 /* TrackersViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackersViewCell.swift; sourceTree = "<group>"; };
 		8ABD89902C3D8829003A0625 /* HeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderViewController.swift; sourceTree = "<group>"; };
+		8ABD89922C4034D5003A0625 /* NewTrackersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTrackersViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +79,7 @@
 				8ABD898C2C3C366F003A0625 /* TrackersViewCell.swift */,
 				8ABD89902C3D8829003A0625 /* HeaderViewController.swift */,
 				8ABD898A2C3774A5003A0625 /* StatisticViewController.swift */,
+				8ABD89922C4034D5003A0625 /* NewTrackersViewController.swift */,
 				8A4119622C31BD2500FD294C /* TabBarController */,
 				8A4119552C31951200FD294C /* Assets.xcassets */,
 				8A4119572C31951200FD294C /* LaunchScreen.storyboard */,
@@ -184,6 +187,7 @@
 				8A41194F2C31951000FD294C /* SceneDelegate.swift in Sources */,
 				8ABD898B2C3774A5003A0625 /* StatisticViewController.swift in Sources */,
 				8A4119612C31A7AF00FD294C /* TrackersViewController.swift in Sources */,
+				8ABD89932C4034D5003A0625 /* NewTrackersViewController.swift in Sources */,
 				8ABD89872C336611003A0625 /* TrackerCategory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

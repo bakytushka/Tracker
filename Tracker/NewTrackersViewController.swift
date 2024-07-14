@@ -53,10 +53,21 @@ final class NewTrackersViewController: UIViewController {
     }
         
     @objc func didTapHabitButton(){
+        let newViewController = NewHabbitViewController()
+            newViewController.navigationItem.title = "Новая привычка"
+        navigationController?.isNavigationBarHidden = false
+            
+            let navigationController = UINavigationController(rootViewController: newViewController)
+            self.present(navigationController, animated: true, completion: nil)
         
     }
     
     @objc func didTapIrregularEventButton() {
-        
+        let newViewController = NewIrregularEventViewController()
+            newViewController.navigationItem.title = "Новое нерегулярное событие"
+        navigationController?.isNavigationBarHidden = false
+            
+            let navigationController = UINavigationController(rootViewController: newViewController)
+            self.present(navigationController, animated: true, completion: nil)
     }
 }

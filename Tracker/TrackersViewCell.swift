@@ -202,7 +202,8 @@ final class TrackersViewCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             colorOfCellView.topAnchor.constraint(equalTo: contentView.topAnchor),
             colorOfCellView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            colorOfCellView.widthAnchor.constraint(equalToConstant: 167),
+      //      colorOfCellView.widthAnchor.constraint(equalToConstant: 167),
+            colorOfCellView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             colorOfCellView.heightAnchor.constraint(equalToConstant: 90),
             
             trackersEmojiLabel.topAnchor.constraint(equalTo: colorOfCellView.topAnchor, constant: 12),

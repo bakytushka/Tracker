@@ -11,23 +11,25 @@ import UIKit
 final class HeaderViewController: UICollectionReusableView {
     static let reuseIdentifier = "Header"
     
-    let titleLabel = UILabel()
+    let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
+        label.tintColor = .black
+        return label
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setUpTitleLabel()
+        setupTitleLabel()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setUpTitleLabel() {
-        addSubview(titleLabel)
-        titleLabel.font = UIFont.systemFont(ofSize: 19, weight: .bold)
-        titleLabel.tintColor = .black
-        
+    private func setupTitleLabel() {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(titleLabel)
         
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
@@ -35,6 +37,5 @@ final class HeaderViewController: UICollectionReusableView {
             titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12),
             titleLabel.heightAnchor.constraint(equalToConstant: 18)
         ])
-        
     }
 }

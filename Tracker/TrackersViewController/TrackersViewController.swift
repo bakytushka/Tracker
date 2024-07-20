@@ -5,34 +5,35 @@
 //  Created by Bakyt Temishov on 30.06.2024.
 //
 
-import Foundation
+
+ import Foundation
 import UIKit
 
 final class TrackersViewController: UIViewController {
     
-    private var categories: [TrackerCategory] = [
-        TrackerCategory(
-            title: "Птицы",
-            trackers: [
-                Tracker(id: UUID.init(), name: "Поливать растения", color: .red, emoji: "🤣", schedule: .friday),
-                Tracker(id: UUID.init(), name: "Бабушка прислала открытку в вотсапе", color: .green, emoji: "❤️", schedule: .friday),
-                Tracker(id: UUID.init(), name: "Кошла заслонила камеру на созвоне", color: .blue, emoji: "😎", schedule: .friday)
-            ]),
-        TrackerCategory(
-            title: "Ящеры",
-            trackers: [
-                Tracker(id: UUID.init(), name: "Поливать растения", color: .red, emoji: "🤣", schedule: .friday),
-                Tracker(id: UUID.init(), name: "Бабушка прислала открытку в вотсапе", color: .brown, emoji: "❤️", schedule: .friday),
-                Tracker(id: UUID.init(), name: "Кошла заслонила камеру на созвоне", color: .blue, emoji: "😎", schedule: .friday)
-            ]),
-        TrackerCategory(
-            title: "Новые",
-            trackers: [
-                Tracker(id: UUID.init(), name: "Поливать растения", color: .red, emoji: "🤣", schedule: .friday),
-                Tracker(id: UUID.init(), name: "Бабушка прислала открытку в вотсапе", color: .green, emoji: "❤️", schedule: .friday),
-                Tracker(id: UUID.init(), name: "Кошла заслонила камеру на созвоне", color: .gray, emoji: "😎", schedule: .friday)
-            ])
-    ]
+    private var categories: [TrackerCategory] = []
+    /*       TrackerCategory(
+     title: "Птицы",
+     trackers: [
+     Tracker(id: UUID.init(), name: "Поливать растения", color: .red, emoji: "🤣", schedule: .friday),
+     Tracker(id: UUID.init(), name: "Бабушка прислала открытку в вотсапе", color: .green, emoji: "❤️", schedule: .friday),
+     Tracker(id: UUID.init(), name: "Кошла заслонила камеру на созвоне", color: .blue, emoji: "😎", schedule: .friday)
+     ]),
+     TrackerCategory(
+     title: "Ящеры",
+     trackers: [
+     Tracker(id: UUID.init(), name: "Поливать растения", color: .red, emoji: "🤣", schedule: .friday),
+     Tracker(id: UUID.init(), name: "Бабушка прислала открытку в вотсапе", color: .brown, emoji: "❤️", schedule: .friday),
+     Tracker(id: UUID.init(), name: "Кошла заслонила камеру на созвоне", color: .blue, emoji: "😎", schedule: .friday)
+     ]),
+     TrackerCategory(
+     title: "Новые",
+     trackers: [
+     Tracker(id: UUID.init(), name: "Поливать растения", color: .red, emoji: "🤣", schedule: .friday),
+     Tracker(id: UUID.init(), name: "Бабушка прислала открытку в вотсапе", color: .green, emoji: "❤️", schedule: .friday),
+     Tracker(id: UUID.init(), name: "Кошла заслонила камеру на созвоне", color: .gray, emoji: "😎", schedule: .friday)
+     ])
+     ] */
     
     private var completedTrackers: [TrackerRecord] = []
     private var currentСategories: [TrackerCategory] = []
@@ -45,6 +46,11 @@ final class TrackersViewController: UIViewController {
     private var stubImageView = UIImageView()
     private var stubLabel = UILabel()
     
+    var currentDate: Date = Date()
+    //   private var selectedWeekDay: WeekDay = .Monday
+    //  private var selectedWeekDay: WeekDay = .Monday
+    private var selectedWeekDay: WeekDay = .none
+    
     let datePicker = UIDatePicker()
     
     override func viewDidLoad() {
@@ -53,12 +59,15 @@ final class TrackersViewController: UIViewController {
         view.backgroundColor = UIColor.white
         setupNaviBar()
         showStubOrTrackers()
+        
+        updateUI()
     }
     
     private func showStubOrTrackers() {
         if categories.isEmpty {
-            setupStubLabel()
             setUpStubImage()
+            setupStubLabel()
+            
         } else {
             setupTreckersCollectionView()
         }
@@ -90,7 +99,7 @@ final class TrackersViewController: UIViewController {
         navigationItem.searchController = searchController
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTracker))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTrackerButton))
         navigationItem.leftBarButtonItem?.tintColor = .black
         
         let currentDate = Date()
@@ -131,24 +140,105 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc func datePickerValueChanged(_ sender: UIDatePicker) {
-        let selectedDate = sender.date
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd.MM.yyyy"
-        let formattedDate = dateFormatter.string(from: selectedDate)
-        print("Выбранная дата: \(formattedDate)")
     }
+    /*     let selectedDate = sender.date
+     let dateFormatter = DateFormatter()
+     dateFormatter.dateFormat = "dd.MM.yyyy"
+     let formattedDate = dateFormatter.string(from: selectedDate)
+     print("Выбранная дата: \(formattedDate)")
+     
+     currentDate = sender.date
+     
+     
+     selectedWeekDay = calculateDayOfWeak(date: sender.date)
+     currentСategories = calculateArrayOfWeak(weak: selectedWeekDay, categories: categories)
+     
+     
+     showStubOrTrackers()
+     } */
+    
+    /*   func calculateArrayOfWeak(weak: WeekDay, categories: [TrackerCategory]) -> [TrackerCategory] {
+     var resultArray = [TrackerCategory]()
+     for category in categories {
+     var resultTracersInCategory = [Tracker]()
+     for tracer in category.trackers {
+     for i in tracer.schedule {
+     if i == weak || i == .none {
+     resultTracersInCategory.append(tracer)
+     }
+     }
+     }
+     if !resultTracersInCategory.isEmpty {
+     let resultOfCategory = TrackerCategory(title: category.title, trackers: resultTracersInCategory)
+     resultArray.append(resultOfCategory)
+     }
+     }
+     return resultArray
+     } */
+    
+    
+    /*      private func calculateDayOfWeak(date: Date) -> WeekDay {
+     let selectedDate = date
+     let calendar = Calendar.current
+     let weekday = calendar.component(.weekday, from: selectedDate)
+     switch weekday {
+     case 1:
+     return .sunday
+     case 2:
+     return .monday
+     case 3:
+     return .tuesday
+     case 4:
+     return .wednesday
+     case 5:
+     return .thursday
+     case 6:
+     return .friday
+     case 7:
+     return .saturday
+     default:
+     print("Ошибка получения дня недели")
+     return .none
+     }
+     } */
+    
     
     @objc
-    private func addTracker() {
+    private func addTrackerButton() {
         let newViewController = NewTrackersViewController()
+        newViewController.delegate = self
         newViewController.navigationItem.title = "Создание трекера"
         navigationController?.isNavigationBarHidden = false
         
         let navigationController = UINavigationController(rootViewController: newViewController)
         self.present(navigationController, animated: true, completion: nil)
     }
+    
+    func addTracker(_ tracker: Tracker, to categoryIndex: Int) {
+        if categoryIndex < categories.count {
+            categories[categoryIndex].trackers.append(tracker)
+        } else {
+            let newCategory = TrackerCategory(title: "Новая категория", trackers: [tracker])
+            categories.append(newCategory)
+        }
+        currentСategories = categories
+        updateUI()
+    }
+    
+    private func updateUI() {
+        if currentСategories.isEmpty {
+            stubImageView.isHidden = false
+            stubLabel.isHidden = false
+            collectionView.isHidden = true
+        } else {
+            stubImageView.isHidden = true
+            stubLabel.isHidden = true
+            collectionView.isHidden = false
+            collectionView.reloadData()
+        }
+    }
+    
 }
-
 extension TrackersViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         categories.count
@@ -199,6 +289,21 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
+extension TrackersViewController: NewTrackerViewControllerDelegate {
+    func setDateForNewTracker() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd.MM.yyyy"
+        return dateFormatter.string(from: currentDate)
+    }
+    
+    func didCreateNewTracker(_ tracker: Tracker) {
+        addTracker(tracker, to: 0)
+    }
+}
+
+
+
+/*
 
 //
 //  TrackersViewController.swift
@@ -207,7 +312,7 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 //  Created by Bakyt Temishov on 30.06.2024.
 //
 
-/* import Foundation
+ import Foundation
  import UIKit
  
  final class TrackersViewController: UIViewController {

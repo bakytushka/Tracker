@@ -22,11 +22,17 @@ final class NewHabbitViewController: UIViewController, UITextFieldDelegate {
     private let containerView = UIView()
     
     private let collectionView = UICollectionView(
-        frame: .zero, 
+        frame: .zero,
         collectionViewLayout: UICollectionViewFlowLayout()
     )
     
+    
+    var selectedDays: [WeekDay: Bool] = [:]
+    
     override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        
         view.backgroundColor = .white
         setUpScrollView()
         setupCollectionView()
@@ -122,7 +128,7 @@ final class NewHabbitViewController: UIViewController, UITextFieldDelegate {
             $0.translatesAutoresizingMaskIntoConstraints = false
             containerView.addSubview($0)
         }
-       
+        
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -141,7 +147,7 @@ final class NewHabbitViewController: UIViewController, UITextFieldDelegate {
             nameTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
             nameTextField.widthAnchor.constraint(equalToConstant: 343),
-
+            
             
             tableView.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
@@ -157,14 +163,14 @@ final class NewHabbitViewController: UIViewController, UITextFieldDelegate {
             cancelButton.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor),
             cancelButton.heightAnchor.constraint(equalToConstant: 60),
             cancelButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
-            //      cancelButton.widthAnchor.constraint(equalToConstant: 166),
-            createButton.leadingAnchor.constraint(equalTo: cancelButton.trailingAnchor, constant: 8),
+            cancelButton.widthAnchor.constraint(equalToConstant: 166),
+            //          createButton.leadingAnchor.constraint(equalTo: cancelButton.trailingAnchor, constant: 8),
             createButton.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor),
             createButton.topAnchor.constraint(equalTo: collectionView.bottomAnchor,constant: 10),
             createButton.heightAnchor.constraint(equalToConstant: 60),
-     //       createButton.widthAnchor.constraint(equalToConstant: 166),
+            createButton.widthAnchor.constraint(equalToConstant: 161),
             createButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
-                ])
+        ])
         
         containerView.layoutIfNeeded()
     }
@@ -196,7 +202,23 @@ extension NewHabbitViewController: UITableViewDataSource, UITableViewDelegate {
             return UITableViewCell()
         }
         cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-        cell.label.text = categories[indexPath.row]
+     //   cell.label.text = categories[indexPath.row]
+        cell.setTitle(categories[indexPath.row])
+        //       return cell
+        if indexPath.row == 1 {
+            let selectedDaysArray = selectedDays.filter { $0.value }.map { $0.key }
+            if selectedDaysArray.isEmpty {
+                cell.setDescription("")
+            } else if selectedDaysArray.count == WeekDay.allCases.count {
+//ПОФИКСИТЬ ЧТОБЫ БЫЛО КАЖДЫЙ ДЕНЬ!                cell.setDescription("Каждый день") // Отображаем "Каждый день", если выбраны все дни
+            } else {
+                let selectedDaysString = selectedDaysArray.map { $0.stringValue }.joined(separator: ", ")
+                cell.setDescription(selectedDaysString) // Отображаем выбранные дни
+            }
+        } else {
+            cell.setDescription("") // Очищаем описание для других ячеек
+        }
+        
         return cell
     }
     
@@ -209,12 +231,30 @@ extension NewHabbitViewController: UITableViewDataSource, UITableViewDelegate {
         print("Selected \(categories[indexPath.row])")
         if indexPath.row == 1 { // Проверяем, что выбрана ячейка "Расписание"
             
+            /*           let scheduleViewController = ScheduleViewController()
+             scheduleViewController.navigationItem.title = "Расписание"
+             navigationController?.isNavigationBarHidden = false
+             
+             navigationController?.pushViewController(scheduleViewController, animated: true)
+             }
+             } */
+            /*        let scheduleViewController = ScheduleViewController()
+             scheduleViewController.navigationItem.title = "Расписание"
+             
+             let navController = UINavigationController(rootViewController: scheduleViewController)
+             navController.modalPresentationStyle = .fullScreen // .pageSheet
+             navController.isNavigationBarHidden = false
+             
+             self.present(navController, animated: true, completion: nil)
+             }
+             } */
             let newViewController = ScheduleViewController()
-                newViewController.navigationItem.title = "Расписание"
+            newViewController.delegate = self
+            newViewController.navigationItem.title = "Расписание"
             navigationController?.isNavigationBarHidden = false
-                
-                let navigationController = UINavigationController(rootViewController: newViewController)
-                self.present(navigationController, animated: true, completion: nil)
+            
+            let navigationController = UINavigationController(rootViewController: newViewController)
+            self.present(navigationController, animated: true, completion: nil)
         }
     }
     
@@ -229,8 +269,8 @@ extension NewHabbitViewController: UITableViewDataSource, UITableViewDelegate {
             cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         }
     }
+    
 }
-
 
 extension NewHabbitViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -326,23 +366,33 @@ extension NewHabbitViewController: UICollectionViewDelegate {
         })
         return true
     }
-    
-/*    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        switch indexPath.section {
-        case 0:
-            selectedEmoji = Constant.emojies[indexPath.row]
-        case 1:
-            selectedColor = Constant.colorSelection[indexPath.row]
-        default:
-            break
-        }
-        checkCreateButtonAvailability()
-    } */
 }
 
-/*extension NewHabbitViewController: ScheduleViewControllerDelegate {
+extension NewHabbitViewController: ScheduleViewControllerDelegate {
     func didSelectDays(_ days: [WeekDay: Bool]) {
-            selectedDays = days
-            tableView.reloadData()
-        }
-} */
+        selectedDays = days
+        tableView.reloadData()
+    }
+}
+
+
+
+/*    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+ switch indexPath.section {
+ case 0:
+ selectedEmoji = Constant.emojies[indexPath.row]
+ case 1:
+ selectedColor = Constant.colorSelection[indexPath.row]
+ default:
+ break
+ }
+ checkCreateButtonAvailability()
+ } */
+
+
+/*extension NewHabbitViewController: ScheduleViewControllerDelegate {
+ func didSelectDays(_ days: [WeekDay: Bool]) {
+ selectedDays = days
+ tableView.reloadData()
+ }
+ } */

@@ -8,16 +8,34 @@
 import Foundation
 import UIKit
 
+protocol ScheduleViewControllerDelegate: AnyObject {
+    func didSelectDays(_ days: [WeekDay: Bool])
+}
+
 final class ScheduleViewController: UIViewController {
     private let doneButton = UIButton()
     
     private let tableView = UITableView()
-    private let categories = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
+    private let daysOfWeek = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
+    
+    
+    
+    var selectedDays: [WeekDay: Bool] = [:]
+    weak var delegate: ScheduleViewControllerDelegate?
+    
     
     override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        
         view.backgroundColor = .white
-        setUpDoneButton()
         setUpTableView()
+        
+        
+        WeekDay.allCases.forEach {
+            selectedDays[$0] = false
+        }
+        setUpDoneButton()
         
     }
     
@@ -60,15 +78,34 @@ final class ScheduleViewController: UIViewController {
         
     }
     
-    @objc private func doneButtonTapped(){
+    @objc private func switchViewChanged(sender: UISwitch) {
+        guard let cell = sender.superview?.superview as? ScheduleTableViewCell,
+              let indexPath = tableView.indexPath(for: cell) else { return }
         
+        let day = WeekDay.allCases[indexPath.row]
+        selectedDays[day] = sender.isOn
     }
+    
+    @objc private func doneButtonTapped(){
+        print("кнопка нажалась")
+        delegate?.didSelectDays(selectedDays)
+       
+        //     navigationController?.popViewController(animated: true)
+   /*     if let navigationController = navigationController {
+            print("navigationController exists")
+            navigationController.popViewController(animated: true)
+        } else {
+      */     // print("navigationController does not exist, dismissing instead")
+            dismiss(animated: true, completion: nil)
+            
+            
+        }
 }
 
 extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
     // Количество строк в секции
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories.count
+        return daysOfWeek.count
     }
     
     // Настройка ячейки
@@ -76,8 +113,42 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "ScheduleTableViewCell", for: indexPath) as? ScheduleTableViewCell else {
             return UITableViewCell()
         }
+ /*       cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        //       cell.label.text = daysOfWeek[indexPath.row]
+        //        return cell
+        cell.switchView.addTarget(
+            self,
+            action: #selector(switchViewChanged),
+            for: .valueChanged
+        )
+        
+        cell.configure(
+            title: daysOfWeek[indexPath.row],
+            isSwithcOn: selectedDays[WeekDay.allCases[indexPath.row]] ?? false
+        )
+        
+        print("Cell for row \(indexPath.row) configured")
+        cell.selectionStyle = .none
         cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-        cell.label.text = categories[indexPath.row]
+        
+        return cell */
+        cell.switchView.addTarget(
+            self,
+            action: #selector(switchViewChanged),
+            for: .valueChanged
+        )
+        
+        cell.configure(
+            title: daysOfWeek[indexPath.row],
+            isSwitchOn: selectedDays[WeekDay.allCases[indexPath.row]] ?? false
+        )
+        
+//        cell.textLabel?.text = titles[indexPath.row]
+        
+        print("Cell for row \(indexPath.row) configured")
+        cell.selectionStyle = .none
+        cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        
         return cell
     }
     
@@ -87,7 +158,7 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         // Логика перехода на другой экран или отображения деталей
-        print("Selected \(categories[indexPath.row])")
+        print("Selected \(daysOfWeek[indexPath.row])")
         if indexPath.row == 1 { // Проверяем, что выбрана ячейка "Расписание"
             
             let newViewController = ScheduleViewController()
@@ -104,7 +175,7 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row == categories.count - 1 {
+        if indexPath.row == daysOfWeek.count - 1 {
             cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
         } else {
             cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)

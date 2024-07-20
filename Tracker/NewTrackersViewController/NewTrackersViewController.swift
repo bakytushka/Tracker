@@ -8,9 +8,23 @@
 import Foundation
 import  UIKit
 
+
+protocol NewTrackerViewControllerDelegate: AnyObject {
+    func setDateForNewTracker() -> String
+    func didCreateNewTracker(_ tracker: Tracker)
+}
+
+
+
+
 final class NewTrackersViewController: UIViewController {
     private let habitButton = UIButton()
     private let irregularEventButton = UIButton()
+    
+    
+    weak var delegate: NewTrackerViewControllerDelegate?
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()

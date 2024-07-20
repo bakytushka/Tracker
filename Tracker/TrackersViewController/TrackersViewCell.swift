@@ -24,7 +24,7 @@ final class TrackersViewCell: UICollectionViewCell {
         trackersEmojiLabel.text = tracker.emoji
         colorOfCellView.backgroundColor = tracker.color
         completionButton.backgroundColor = tracker.color
-        SetupCounterOfDaysLabel()
+        setupCounterOfDaysLabel()
     }
     
     private func setupUI() {
@@ -84,7 +84,7 @@ final class TrackersViewCell: UICollectionViewCell {
     
     func setupCounterOfDays(_ sender: Int) {
         counterOfDays = sender
-        SetupCounterOfDaysLabel()
+        setupCounterOfDaysLabel()
     }
     
     @objc private func didTapCompletionButton() {
@@ -94,16 +94,16 @@ final class TrackersViewCell: UICollectionViewCell {
             completionButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
             completionButton.alpha = 0.3
             counterOfDays -= 1
-            SetupCounterOfDaysLabel()
+            setupCounterOfDaysLabel()
         } else {
             completionButton.setImage(UIImage(systemName: "plus"), for: .normal)
             completionButton.alpha = 1
             counterOfDays += 1
-            SetupCounterOfDaysLabel()
+            setupCounterOfDaysLabel()
         }
     }
     
-    private func SetupCounterOfDaysLabel() {
+    private func setupCounterOfDaysLabel() {
         switch counterOfDays{
         case 1:
             counterOfDaysLabel.text = "\(counterOfDays) день"

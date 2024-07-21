@@ -44,7 +44,6 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
         setupCancelButton()
         setupCreateButton()
         setupCollectionView()
-        
         setupConstraints()
     }
     
@@ -216,7 +215,6 @@ extension NewIrregularEventViewController: UITableViewDataSource, UITableViewDel
             return UITableViewCell()
         }
         cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-        //      cell.label.text = categories[indexPath.row]
         cell.setTitle(categories[indexPath.row])
         return cell
     }
@@ -342,6 +340,5 @@ extension NewIrregularEventViewController: UICollectionViewDelegate {
         default:
             break
         }
-        //  checkCreateButtonAvailability()
     }
 }

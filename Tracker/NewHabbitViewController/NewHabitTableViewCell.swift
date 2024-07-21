@@ -59,8 +59,8 @@ final class NewHabitTableViewCell: UITableViewCell {
         label.text = title
     }
 
-    func setDescription(_ description: String) {
-        dayslabel.text = description
-        dayslabel.isHidden = description.isEmpty
+    func setSelectedDays(_ selectedDays: String) {
+        dayslabel.text = selectedDays
+        dayslabel.isHidden = selectedDays.isEmpty
     }
 }

@@ -24,13 +24,13 @@ final class ScheduleTableViewCell: UITableViewCell {
     }
     
     private func setupViews(){
-        backgroundColor = UIColor(red: 230/255, green: 232/255, blue: 235/255, alpha: 0.3)
+        backgroundColor = Colors.textFieldBackground
         
         titleLabel.font = .systemFont(ofSize: 17, weight: .regular)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(titleLabel)
         
-        switchView.onTintColor = UIColor(red: 55/255, green: 114/255, blue: 231/255, alpha: 1.0)
+        switchView.onTintColor = Colors.switchViewColor
         switchView.setOn(false, animated: true)
         switchView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(switchView)

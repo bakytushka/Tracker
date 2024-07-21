@@ -11,10 +11,10 @@ import UIKit
 final class NewHabbitViewController: UIViewController, UITextFieldDelegate {
     
     weak var delegate: NewTrackerViewControllerDelegate?
+    
     private let trackerType: TrackerType = .habit
-    private let newTrackername: String = ""
-    private var categoryName: String = ""
     private var schedule: [String] = []
+    
     private var selectedColor: UIColor?
     private var selectedEmoji: String?
     var selectedDays: [WeekDay: Bool] = [:]
@@ -206,12 +206,6 @@ final class NewHabbitViewController: UIViewController, UITextFieldDelegate {
         case .event:
             newTrackerSchedule = [date]
         }
-        /*    switch trackerType {
-         case .habit:
-         newTrackerSchedule = selectedDays.filter { $0.value }.map { $0.key.stringValue }
-         case .event:
-         newTrackerSchedule = [date]
-         }*/
         
         let newTracker = Tracker(
             id: UUID(),
@@ -242,33 +236,28 @@ extension NewHabbitViewController: UITableViewDataSource, UITableViewDelegate {
         if indexPath.row == 1 {
             let selectedDaysArray = selectedDays.filter { $0.value }.map { $0.key }
             if selectedDaysArray.isEmpty {
-                cell.setDescription("")
+                cell.setSelectedDays("")
             } else if selectedDaysArray.count == WeekDay.allCases.count {
-                cell.setDescription("Каждый день")
+                cell.setSelectedDays("Каждый день")
             } else {
                 let selectedDaysString = selectedDaysArray.map { $0.stringValue }.joined(separator: ", ")
-                cell.setDescription(selectedDaysString)
+                cell.setSelectedDays(selectedDaysString)
             }
         } else {
-            cell.setDescription("")
+            cell.setSelectedDays("")
         }
         
         return cell
     }
-    
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         print("Selected \(categories[indexPath.row])")
         if indexPath.row == 1 {
             let newViewController = ScheduleViewController()
-            
-            // НУЖНА ЛИ ЭТА СТРОКА
             newViewController.selectedDays = selectedDays
-            
-            
-            
             newViewController.delegate = self
+            
             newViewController.navigationItem.title = "Расписание"
             navigationController?.isNavigationBarHidden = false
             

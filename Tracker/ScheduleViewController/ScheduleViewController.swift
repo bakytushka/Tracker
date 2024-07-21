@@ -18,13 +18,12 @@ final class ScheduleViewController: UIViewController {
     private let daysOfWeek = Constant.daysOfWeekTitles
     
     var selectedDays: [WeekDay: Bool] = [:]
-    
     weak var delegate: ScheduleViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
- 
+        
         setupUI()
     }
     
@@ -65,7 +64,7 @@ final class ScheduleViewController: UIViewController {
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             tableView.heightAnchor.constraint(equalToConstant: 525),
-        
+            
             doneButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             doneButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             doneButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),

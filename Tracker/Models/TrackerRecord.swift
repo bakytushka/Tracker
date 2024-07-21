@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-struct TrackerRecord {
+struct TrackerRecord: Hashable {
     let trackerID: UUID
     let date: Date
 }

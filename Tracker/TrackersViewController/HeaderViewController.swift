@@ -27,6 +27,10 @@ final class HeaderViewController: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func setTitle(_ title: String) {
+        titleLabel.text = title
+    }
+    
     private func setupTitleLabel() {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(titleLabel)

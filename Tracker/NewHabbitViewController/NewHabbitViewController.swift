@@ -9,6 +9,16 @@ import Foundation
 import UIKit
 
 final class NewHabbitViewController: UIViewController, UITextFieldDelegate {
+    
+    weak var delegate: NewTrackerViewControllerDelegate?
+    private let trackerType: TrackerType = .habit
+    private let newTrackername: String = ""
+    private var categoryName: String = ""
+    private var schedule: [String] = []
+    private var selectedColor: UIColor?
+    private var selectedEmoji: String?
+    var selectedDays: [WeekDay: Bool] = [:]
+    
     private let nameTextField = UITextField()
     private let maxLength = 38
     
@@ -26,28 +36,26 @@ final class NewHabbitViewController: UIViewController, UITextFieldDelegate {
         collectionViewLayout: UICollectionViewFlowLayout()
     )
     
-    
-    var selectedDays: [WeekDay: Bool] = [:]
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
         view.backgroundColor = .white
-        setUpScrollView()
-        setupCollectionView()
-        setUpTextField()
-        setUpTableView()
-        setUpCancelButton()
-        setUpCreateButton()
         setupUI()
     }
     
+    private func setupUI() {
+        setupScrollView()
+        setupCollectionView()
+        setupTextField()
+        setupTableView()
+        setupCancelButton()
+        setupCreateButton()
+        setupConstraints()
+    }
     
-    private func setUpTextField(){
+    private func setupTextField(){
         nameTextField.delegate = self
         nameTextField.placeholder = "Введите название трекера"
-        nameTextField.backgroundColor = UIColor(red: 230/255, green: 232/255, blue: 235/255, alpha: 0.3)
+        nameTextField.backgroundColor = Colors.textFieldBackground
         nameTextField.layer.cornerRadius = 16
         nameTextField.textColor = .black
         nameTextField.borderStyle = .none
@@ -56,40 +64,33 @@ final class NewHabbitViewController: UIViewController, UITextFieldDelegate {
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: nameTextField.frame.height))
         nameTextField.leftView = paddingView
         nameTextField.leftViewMode = .always
+        
+        nameTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
     }
     
-    
-    private func setUpTableView() {
+    private func setupTableView() {
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.frame = self.view.bounds
         tableView.layer.cornerRadius = 16
         tableView.isScrollEnabled = false
+        
         tableView.register(NewHabitTableViewCell.self, forCellReuseIdentifier: NewHabitTableViewCell.reuseIdentifier)
     }
     
     private func setupCollectionView() {
-        collectionView.register(
-            NewTrackerCollectionViewCell.self,
-            forCellWithReuseIdentifier: NewTrackerCollectionViewCell.reuseIdentifier
-        )
-        collectionView.register(
-            NewTrackerHeaderView.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: NewTrackerHeaderView.reuseIdentifier
-        )
         collectionView.backgroundColor = .white
         collectionView.isScrollEnabled = false
         collectionView.allowsMultipleSelection = true
         collectionView.dataSource = self
         collectionView.delegate = self
+        
+        collectionView.register(NewTrackerCollectionViewCell.self, forCellWithReuseIdentifier: NewTrackerCollectionViewCell.reuseIdentifier)
+        collectionView.register(NewTrackerHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: NewTrackerHeaderView.reuseIdentifier)
     }
     
-    private func setUpCancelButton() {
-        
-        let customColor = UIColor(red: 245/255, green: 107/255, blue: 108/255, alpha: 1.0) // #F56B6C
-        cancelButton.setTitleColor(customColor, for: .normal)
-        cancelButton.layer.borderColor = customColor.cgColor // Преобразование UIColor в CGColor
+    private func setupCancelButton() {
+        cancelButton.setTitleColor(Colors.cancelButtonColor, for: .normal)
+        cancelButton.layer.borderColor = Colors.cancelButtonColor.cgColor
         cancelButton.layer.borderWidth = 1
         cancelButton.layer.cornerRadius = 16
         cancelButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
@@ -101,8 +102,8 @@ final class NewHabbitViewController: UIViewController, UITextFieldDelegate {
         )
     }
     
-    private func setUpCreateButton(){
-        createButton.backgroundColor = UIColor(red: 174/255, green: 175/255, blue: 180/255, alpha: 1.0)
+    private func setupCreateButton(){
+        createButton.backgroundColor = Colors.buttonInactive
         createButton.layer.cornerRadius = 16
         createButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         createButton.setTitle("Создать", for: .normal)
@@ -114,16 +115,17 @@ final class NewHabbitViewController: UIViewController, UITextFieldDelegate {
         )
     }
     
-    private func setUpScrollView() {
+    private func setupScrollView() {
         scrollView.isScrollEnabled = true
         scrollView.showsHorizontalScrollIndicator = false
     }
     
-    private func setupUI() {
+    private func setupConstraints() {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
         containerView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(containerView)
+        
         [nameTextField, tableView, collectionView, createButton, cancelButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             containerView.addSubview($0)
@@ -148,7 +150,6 @@ final class NewHabbitViewController: UIViewController, UITextFieldDelegate {
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
             nameTextField.widthAnchor.constraint(equalToConstant: 343),
             
-            
             tableView.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
@@ -164,14 +165,13 @@ final class NewHabbitViewController: UIViewController, UITextFieldDelegate {
             cancelButton.heightAnchor.constraint(equalToConstant: 60),
             cancelButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
             cancelButton.widthAnchor.constraint(equalToConstant: 166),
-            //          createButton.leadingAnchor.constraint(equalTo: cancelButton.trailingAnchor, constant: 8),
+            
             createButton.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor),
             createButton.topAnchor.constraint(equalTo: collectionView.bottomAnchor,constant: 10),
             createButton.heightAnchor.constraint(equalToConstant: 60),
             createButton.widthAnchor.constraint(equalToConstant: 161),
             createButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
         ])
-        
         containerView.layoutIfNeeded()
     }
     
@@ -182,73 +182,92 @@ final class NewHabbitViewController: UIViewController, UITextFieldDelegate {
         return updatedText.count <= maxLength
     }
     
+    @objc private func textFieldDidChange(_ textField: UITextField) {
+        let hasText = !(textField.text?.isEmpty ?? true)
+        createButton.isEnabled = hasText
+        createButton.backgroundColor = hasText ? .black : Colors.buttonInactive
+    }
+    
     @objc func cancelButtonTapped(){
         dismiss(animated: true, completion: nil)
     }
     
     @objc func createButtonTapped(){
+        guard let newTrackerName = nameTextField.text else { return }
+        guard let date = delegate?.setDateForNewTracker() else { return }
+        
+        var newTrackerSchedule: [String] = []
+        
+        switch trackerType {
+        case .habit:
+            if selectedDays.values.contains(true) {
+                newTrackerSchedule = selectedDays.filter { $0.value }.map { $0.key.stringValue }
+            }
+        case .event:
+            newTrackerSchedule = [date]
+        }
+        /*    switch trackerType {
+         case .habit:
+         newTrackerSchedule = selectedDays.filter { $0.value }.map { $0.key.stringValue }
+         case .event:
+         newTrackerSchedule = [date]
+         }*/
+        
+        let newTracker = Tracker(
+            id: UUID(),
+            name: newTrackerName,
+            color: selectedColor ?? .green,
+            emoji: selectedEmoji ?? Constant.randomEmoji(),
+            schedule: newTrackerSchedule
+        )
+        delegate?.didCreateNewTracker(newTracker)
+        if let window = UIApplication.shared.windows.first {
+            window.rootViewController?.dismiss(animated: true, completion: nil)
+        }
     }
 }
 
 extension NewHabbitViewController: UITableViewDataSource, UITableViewDelegate {
-    // Количество строк в секции
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categories.count
     }
     
-    // Настройка ячейки
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "NewHabitTableViewCell", for: indexPath) as? NewHabitTableViewCell else {
             return UITableViewCell()
         }
         cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-     //   cell.label.text = categories[indexPath.row]
         cell.setTitle(categories[indexPath.row])
-        //       return cell
+        
         if indexPath.row == 1 {
             let selectedDaysArray = selectedDays.filter { $0.value }.map { $0.key }
             if selectedDaysArray.isEmpty {
                 cell.setDescription("")
             } else if selectedDaysArray.count == WeekDay.allCases.count {
-//ПОФИКСИТЬ ЧТОБЫ БЫЛО КАЖДЫЙ ДЕНЬ!                cell.setDescription("Каждый день") // Отображаем "Каждый день", если выбраны все дни
+                cell.setDescription("Каждый день")
             } else {
                 let selectedDaysString = selectedDaysArray.map { $0.stringValue }.joined(separator: ", ")
-                cell.setDescription(selectedDaysString) // Отображаем выбранные дни
+                cell.setDescription(selectedDaysString)
             }
         } else {
-            cell.setDescription("") // Очищаем описание для других ячеек
+            cell.setDescription("")
         }
         
         return cell
     }
     
     
-    
-    // Обработка выбора ячейки
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        // Логика перехода на другой экран или отображения деталей
         print("Selected \(categories[indexPath.row])")
-        if indexPath.row == 1 { // Проверяем, что выбрана ячейка "Расписание"
-            
-            /*           let scheduleViewController = ScheduleViewController()
-             scheduleViewController.navigationItem.title = "Расписание"
-             navigationController?.isNavigationBarHidden = false
-             
-             navigationController?.pushViewController(scheduleViewController, animated: true)
-             }
-             } */
-            /*        let scheduleViewController = ScheduleViewController()
-             scheduleViewController.navigationItem.title = "Расписание"
-             
-             let navController = UINavigationController(rootViewController: scheduleViewController)
-             navController.modalPresentationStyle = .fullScreen // .pageSheet
-             navController.isNavigationBarHidden = false
-             
-             self.present(navController, animated: true, completion: nil)
-             }
-             } */
+        if indexPath.row == 1 {
             let newViewController = ScheduleViewController()
+            
+            // НУЖНА ЛИ ЭТА СТРОКА
+            newViewController.selectedDays = selectedDays
+            
+            
+            
             newViewController.delegate = self
             newViewController.navigationItem.title = "Расписание"
             navigationController?.isNavigationBarHidden = false
@@ -269,7 +288,6 @@ extension NewHabbitViewController: UITableViewDataSource, UITableViewDelegate {
             cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         }
     }
-    
 }
 
 extension NewHabbitViewController: UICollectionViewDataSource {
@@ -305,7 +323,6 @@ extension NewHabbitViewController: UICollectionViewDataSource {
                 cell.setColor(color)
             }
         }
-        
         return cell
     }
     
@@ -366,6 +383,18 @@ extension NewHabbitViewController: UICollectionViewDelegate {
         })
         return true
     }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        switch indexPath.section {
+        case 0:
+            selectedEmoji = Constant.emojies[indexPath.row]
+        case 1:
+            selectedColor = Constant.colorSelection[indexPath.row]
+        default:
+            break
+        }
+    }
 }
 
 extension NewHabbitViewController: ScheduleViewControllerDelegate {
@@ -374,25 +403,3 @@ extension NewHabbitViewController: ScheduleViewControllerDelegate {
         tableView.reloadData()
     }
 }
-
-
-
-/*    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
- switch indexPath.section {
- case 0:
- selectedEmoji = Constant.emojies[indexPath.row]
- case 1:
- selectedColor = Constant.colorSelection[indexPath.row]
- default:
- break
- }
- checkCreateButtonAvailability()
- } */
-
-
-/*extension NewHabbitViewController: ScheduleViewControllerDelegate {
- func didSelectDays(_ days: [WeekDay: Bool]) {
- selectedDays = days
- tableView.reloadData()
- }
- } */

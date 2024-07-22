@@ -20,7 +20,6 @@ enum Constant {
     ]
     
     static let colorSelection = (1...18).map({ UIColor(named: String($0)) })
-  
     static let collectionViewTitles = ["Emoji", "Цвет"]
 }
 
@@ -34,6 +33,6 @@ enum Colors {
 
 extension Constant {
     static func randomEmoji() -> String {
-        return emojies.randomElement() ?? "❤️"
+        return emojies.randomElement() ?? "🤪"
     }
 }

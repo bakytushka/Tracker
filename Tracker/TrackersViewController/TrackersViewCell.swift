@@ -37,19 +37,23 @@ final class TrackersViewCell: UICollectionViewCell {
         completionButton.backgroundColor = tracker.color
         setupCounterOfDaysLabel()
     }
-    
     private func setupUI() {
+        setupTrackersNameLabel()
+        setupTrackersNameLabel()
+        setupTrackersEmojiLabel()
+        setupCompletionButton()
+        setupCounterOfDaysLabel()
+        setupConstraints()
+    }
+    
+    private func setupConstraints() {
         contentView.backgroundColor = .clear
+        colorOfCellView.layer.cornerRadius = 16
         
         [colorOfCellView, trackersNameLabel, trackersEmojiLabel, counterOfDaysLabel, completionButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview($0)
         }
-        
-        contentView.addSubview(colorOfCellView)
-        contentView.addSubview(trackersEmojiLabel)
-        contentView.addSubview(completionButton)
-        contentView.addSubview(counterOfDaysLabel)
-        contentView.addSubview(trackersNameLabel)
         
         NSLayoutConstraint.activate([
             colorOfCellView.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -75,48 +79,36 @@ final class TrackersViewCell: UICollectionViewCell {
             counterOfDaysLabel.trailingAnchor.constraint(equalTo: completionButton.leadingAnchor, constant: -8),
             counterOfDaysLabel.centerYAnchor.constraint(equalTo: completionButton.centerYAnchor)
         ])
-        
-        colorOfCellView.layer.cornerRadius = 16
+    }
+    
+    private func setupTrackersNameLabel() {
         trackersNameLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         trackersNameLabel.textColor = .white
         trackersNameLabel.lineBreakMode = .byWordWrapping
         trackersNameLabel.numberOfLines = 2
-        
+    }
+    
+    private func setupTrackersEmojiLabel() {
         trackersEmojiLabel.font = UIFont.systemFont(ofSize: 12)
         trackersEmojiLabel.backgroundColor = .white.withAlphaComponent(0.3)
         trackersEmojiLabel.textAlignment = .center
         trackersEmojiLabel.layer.cornerRadius = 12
         trackersEmojiLabel.layer.masksToBounds = true
-        
-        counterOfDaysLabel.font = UIFont.systemFont(ofSize: 12)
+    }
+    
+    private func setupCounterOfDaysLabel() {
+        counterOfDaysLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         counterOfDaysLabel.lineBreakMode = .byWordWrapping
-//        counterOfDaysLabel.text = "1 день"
-        
+        counterOfDaysLabel.text = setQuantityLabelText(counterOfDays)
+    }
+    
+    private func setupCompletionButton() {
         completionButton.layer.cornerRadius = 16
         completionButton.setImage(UIImage(systemName: "plus"), for: .normal)
         completionButton.tintColor = .white
         completionButton.addTarget(self, action: #selector(didTapCompletionButton), for: .touchUpInside)
     }
     
-    @objc private func didTapCompletionButton() {
-        trackerIsCompleted.toggle()
-        
-        if trackerIsCompleted {
-            completionButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
-            completionButton.alpha = 0.3
-            counterOfDays += 1
-        } else {
-            completionButton.setImage(UIImage(systemName: "plus"), for: .normal)
-            completionButton.alpha = 1
-            counterOfDays -= 1
-        }
-        setupCounterOfDaysLabel()
-    }
-    
-    private func setupCounterOfDaysLabel() {
-        counterOfDaysLabel.text = setQuantityLabelText(counterOfDays)
-    }
-  
     func configure(
         with tracker: Tracker,
         trackerIsCompleted: Bool,
@@ -144,26 +136,25 @@ final class TrackersViewCell: UICollectionViewCell {
         let daysForms = ["дней", "день", "дня"]
         let remainder100 = count % 100
         let remainder10 = count % 10
-        // Индекс формы слова "день" в массиве, который будем использовать
-        var formIndex: Int
         
-        switch remainder100 {
-        case 11...14: // Если остаток от 11 до 14, используем форму "дней"
+        let formIndex: Int
+        
+        if remainder100 >= 11 && remainder100 <= 14 {
             formIndex = 0
-        default:
+        } else {
             switch remainder10 {
-            case 1: // Если остаток равен 1 и число не оканчивается на 11, используем форму "день"
+            case 1:
                 formIndex = 1
-            case 2...4: // Если остаток от 2 до 4 и число не оканчивается на 12, 13, 14, используем форму "дня"
+            case 2...4:
                 formIndex = 2
-            default: // Во всех остальных случаях, используем форму "дней"
+            default:
                 formIndex = 0
             }
         }
         
         return "\(count) \(daysForms[formIndex])"
     }
-
+    
     private func setupQuantityButton(with tracker: Tracker) {
         switch completionButton.currentImage {
         case UIImage(systemName: "plus"):
@@ -173,5 +164,20 @@ final class TrackersViewCell: UICollectionViewCell {
         case .none, .some(_):
             break
         }
+    }
+    
+    @objc private func didTapCompletionButton() {
+        trackerIsCompleted.toggle()
+        
+        if trackerIsCompleted {
+            completionButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
+            completionButton.alpha = 0.3
+            counterOfDays += 1
+        } else {
+            completionButton.setImage(UIImage(systemName: "plus"), for: .normal)
+            completionButton.alpha = 1
+            counterOfDays -= 1
+        }
+        setupCounterOfDaysLabel()
     }
 }

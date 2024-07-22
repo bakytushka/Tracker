@@ -189,7 +189,6 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
     }
     
     @objc private func createButtonTapped() {
-        print("кнопка нажата")
         guard let newTrackerName = nameTextField.text else { return }
         let newTracker = Tracker(
             id: UUID(),
@@ -221,7 +220,6 @@ extension NewIrregularEventViewController: UITableViewDataSource, UITableViewDel
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        print("Selected \(categories[indexPath.row])")
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -258,7 +256,7 @@ extension NewIrregularEventViewController: UICollectionViewDataSource {
             withReuseIdentifier: NewTrackerCollectionViewCell.reuseIdentifier,
             for: indexPath
         ) as? NewTrackerCollectionViewCell else {
-            assertionFailure("Unable to dequeue NewTrackerCollectionViewCell")
+            assertionFailure("Не удалось получить ячейку NewTrackerCollectionViewCell")
             return UICollectionViewCell()
         }
         
@@ -287,7 +285,7 @@ extension NewIrregularEventViewController: UICollectionViewDataSource {
             withReuseIdentifier: id,
             for: indexPath
         ) as? NewTrackerHeaderView else {
-            assertionFailure("Unable to dequeue NewTrackerSupplementaryView")
+            assertionFailure("Не удалось получить header NewTrackerSupplementaryView")
             return UICollectionReusableView()
         }
         

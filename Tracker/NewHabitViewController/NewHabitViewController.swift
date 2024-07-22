@@ -1,5 +1,5 @@
 //
-//  NewHabbitViewController.swift
+//  NewHabitViewController.swift
 //  Tracker
 //
 //  Created by Bakyt Temishov on 12.07.2024.
@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-final class NewHabbitViewController: UIViewController, UITextFieldDelegate {
+final class NewHabitViewController: UIViewController, UITextFieldDelegate {
     
     weak var delegate: NewTrackerViewControllerDelegate?
     
@@ -221,7 +221,7 @@ final class NewHabbitViewController: UIViewController, UITextFieldDelegate {
     }
 }
 
-extension NewHabbitViewController: UITableViewDataSource, UITableViewDelegate {
+extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categories.count
     }
@@ -252,7 +252,6 @@ extension NewHabbitViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        print("Selected \(categories[indexPath.row])")
         if indexPath.row == 1 {
             let newViewController = ScheduleViewController()
             newViewController.selectedDays = selectedDays
@@ -279,7 +278,7 @@ extension NewHabbitViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
-extension NewHabbitViewController: UICollectionViewDataSource {
+extension NewHabitViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch section {
         case 0:
@@ -300,7 +299,7 @@ extension NewHabbitViewController: UICollectionViewDataSource {
             withReuseIdentifier: NewTrackerCollectionViewCell.reuseIdentifier,
             for: indexPath
         ) as? NewTrackerCollectionViewCell else {
-            assertionFailure("Unable to dequeue NewTrackerCollectionViewCell")
+            assertionFailure("Не удалось получить ячейку NewTrackerCollectionViewCell")
             return UICollectionViewCell()
         }
         
@@ -329,7 +328,7 @@ extension NewHabbitViewController: UICollectionViewDataSource {
             withReuseIdentifier: id,
             for: indexPath
         ) as? NewTrackerHeaderView else {
-            assertionFailure("Unable to dequeue NewTrackerSupplementaryView")
+            assertionFailure("Не удалось получить header NewTrackerSupplementaryView")
             return UICollectionReusableView()
         }
         
@@ -340,7 +339,7 @@ extension NewHabbitViewController: UICollectionViewDataSource {
     }
 }
 
-extension NewHabbitViewController: UICollectionViewDelegateFlowLayout {
+extension NewHabitViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         let indexPath = IndexPath(row: 0, section: section)
         let headerView = self.collectionView(collectionView, viewForSupplementaryElementOfKind: UICollectionView.elementKindSectionHeader, at: indexPath)
@@ -363,7 +362,7 @@ extension NewHabbitViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-extension NewHabbitViewController: UICollectionViewDelegate {
+extension NewHabitViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         collectionView.indexPathsForVisibleItems.filter({
             $0.section == indexPath.section
@@ -386,7 +385,7 @@ extension NewHabbitViewController: UICollectionViewDelegate {
     }
 }
 
-extension NewHabbitViewController: ScheduleViewControllerDelegate {
+extension NewHabitViewController: ScheduleViewControllerDelegate {
     func didSelectDays(_ days: [WeekDay: Bool]) {
         selectedDays = days
         tableView.reloadData()

@@ -15,8 +15,6 @@ struct Tracker {
     let emoji: String
     let schedule: [String]
     
-    
-    
     init(id: UUID, name: String, color: UIColor, emoji: String, schedule: [String]) {
         self.id = id
         self.name = name
@@ -24,7 +22,6 @@ struct Tracker {
         self.emoji = emoji
         self.schedule = schedule
     }
-    
 }
 
 enum WeekDay: Int, CaseIterable {
@@ -35,18 +32,16 @@ enum WeekDay: Int, CaseIterable {
     case friday
     case saturday
     case sunday
-  //  case none
     
     var stringValue: String {
         switch self {
-            case .monday: return "Пн"
-            case .tuesday: return "Вт"
-            case .wednesday: return "Ср"
-            case .thursday: return "Чт"
-            case .friday: return "Пт"
-            case .saturday: return "Сб"
-            case .sunday: return "Вс"
- //       case .none: return ""
+        case .monday: return "Пн"
+        case .tuesday: return "Вт"
+        case .wednesday: return "Ср"
+        case .thursday: return "Чт"
+        case .friday: return "Пт"
+        case .saturday: return "Сб"
+        case .sunday: return "Вс"
         }
     }
 }

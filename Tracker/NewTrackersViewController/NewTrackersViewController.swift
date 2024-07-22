@@ -68,7 +68,7 @@ final class NewTrackersViewController: UIViewController {
     }
     
     @objc func didTapHabitButton(){
-        let newViewController = NewHabbitViewController()
+        let newViewController = NewHabitViewController()
         newViewController.delegate = delegate
         newViewController.navigationItem.title = "Новая привычка"
         navigationController?.isNavigationBarHidden = false

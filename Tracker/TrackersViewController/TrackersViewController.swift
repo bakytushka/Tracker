@@ -6,7 +6,7 @@
 //
 
 
- import Foundation
+import Foundation
 import UIKit
 
 final class TrackersViewController: UIViewController {
@@ -36,6 +36,19 @@ final class TrackersViewController: UIViewController {
         setupStubImage()
         setupStubLabel()
         updateUI()
+    }
+    
+    private func updateUI() {
+        if currentCategories.isEmpty {
+            stubImageView.isHidden = false
+            stubLabel.isHidden = false
+            collectionView.isHidden = true
+        } else {
+            stubImageView.isHidden = true
+            stubLabel.isHidden = true
+            collectionView.isHidden = false
+            collectionView.reloadData()
+        }
     }
     
     private func setupTrackersCollectionView() {
@@ -104,12 +117,17 @@ final class TrackersViewController: UIViewController {
         ])
     }
     
-    @objc func datePickerValueChanged(_ sender: UIDatePicker) {
-        currentDate = sender.date
-        filteredTrackers()
+    func addTracker(_ tracker: Tracker, to categoryIndex: Int) {
+        if categoryIndex < categories.count {
+            categories[categoryIndex].trackers.append(tracker)
+        } else {
+            let newCategory = TrackerCategory(title: "Радостные мелочи", trackers: [tracker])
+            categories.append(newCategory)
+        }
+        currentCategories = categories
         updateUI()
     }
-
+    
     private func filteredTrackers() {
         let calendar = Calendar.current
         let selectedWeekDay = calendar.component(.weekday, from: currentDate) - 1
@@ -121,9 +139,15 @@ final class TrackersViewController: UIViewController {
             }
             return !filteredTrackers.isEmpty ? TrackerCategory(title: category.title, trackers: filteredTrackers) : nil
         }
-            collectionView.reloadData()
+        collectionView.reloadData()
     }
-
+    
+    @objc func datePickerValueChanged(_ sender: UIDatePicker) {
+        currentDate = sender.date
+        filteredTrackers()
+        updateUI()
+    }
+    
     @objc
     private func addTrackerButton() {
         let newViewController = NewTrackersViewController()
@@ -134,31 +158,6 @@ final class TrackersViewController: UIViewController {
         let navigationController = UINavigationController(rootViewController: newViewController)
         self.present(navigationController, animated: true, completion: nil)
     }
-    
-    func addTracker(_ tracker: Tracker, to categoryIndex: Int) {
-        if categoryIndex < categories.count {
-            categories[categoryIndex].trackers.append(tracker)
-        } else {
-            let newCategory = TrackerCategory(title: "Новая категория", trackers: [tracker])
-            categories.append(newCategory)
-        }
-        currentCategories = categories
-        updateUI()
-    }
-    
-    private func updateUI() {
-        if currentCategories.isEmpty {
-            stubImageView.isHidden = false
-            stubLabel.isHidden = false
-            collectionView.isHidden = true
-        } else {
-            stubImageView.isHidden = true
-            stubLabel.isHidden = true
-            collectionView.isHidden = false
-            collectionView.reloadData()
-        }
-    }
-    
 }
 
 extension TrackersViewController: UICollectionViewDataSource {
@@ -167,7 +166,7 @@ extension TrackersViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return categories[section].trackers.count
+        return currentCategories[section].trackers.count  //categories[section].trackers.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -176,13 +175,22 @@ extension TrackersViewController: UICollectionViewDataSource {
             withReuseIdentifier: TrackersViewCell.reuseIdentifier,
             for: indexPath
         ) as? TrackersViewCell else {
-            assertionFailure("Unable to dequeue TrackerCollectionViewCell")
+            assertionFailure("Не удалось получить ячейку TrackerCollectionViewCell")
+            return UICollectionViewCell()
+        }
+        
+        guard indexPath.section < currentCategories.count else {
+            assertionFailure("Индекс секции вне диапазона")
+            return UICollectionViewCell()
+        }
+        
+        let trackers = currentCategories[indexPath.section].trackers
+        guard indexPath.row < trackers.count else {
+            assertionFailure("Индекс строки вне диапазона")
             return UICollectionViewCell()
         }
         
         let tracker = currentCategories[indexPath.section].trackers[indexPath.row]
-        let id = currentCategories[indexPath.section].trackers[indexPath.row].id
-        
         cell.delegate = self
         let isCompletedToday = isTrackerCompletedToday(id: tracker.id)
         let completedDays = completedTrackers.filter {
@@ -277,7 +285,7 @@ extension TrackersViewController: TrackerViewCellDelegate {
         
         collectionView.reloadItems(at: [indexPath])
     }
-   
+    
     func record(_ sender: Bool, _ cell: TrackersViewCell) {
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
         let id = currentCategories[indexPath.section].trackers[indexPath.row].id

@@ -26,7 +26,7 @@ final class NewHabitTableViewCell: UITableViewCell {
     }
     
     private func setupViews() {
-        backgroundColor = UIColor(red: 230/255, green: 232/255, blue: 235/255, alpha: 0.3)
+        backgroundColor = Colors.textFieldBackground
         stackView.axis = .vertical
         stackView.spacing = 2
         stackView.alignment = .fill
@@ -58,7 +58,7 @@ final class NewHabitTableViewCell: UITableViewCell {
     func setTitle(_ title: String) {
         label.text = title
     }
-
+    
     func setSelectedDays(_ selectedDays: String) {
         dayslabel.text = selectedDays
         dayslabel.isHidden = selectedDays.isEmpty

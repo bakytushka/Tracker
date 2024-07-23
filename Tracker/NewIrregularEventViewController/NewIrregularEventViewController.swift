@@ -201,13 +201,15 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
     }
     
     @objc private func createButtonTapped() {
+        let allWeekDays: [String] = WeekDay.allCases.map { $0.stringValue }
+        
         guard let newTrackerName = nameTextField.text else { return }
         let newTracker = Tracker(
             id: UUID(),
             name: newTrackerName,
             color: selectedColor ?? .systemPink,
             emoji: selectedEmoji ?? Constant.randomEmoji(),
-            schedule: []
+            schedule: allWeekDays
         )
         delegate?.didCreateNewTracker(newTracker)
         if let window = UIApplication.shared.windows.first {

@@ -35,6 +35,7 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
         
         view.backgroundColor = .white
         setupUI()
+        addTapGestureToHideKeyboard()
     }
     
     private func setupUI(){
@@ -176,6 +177,17 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
         let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
         
         return updatedText.count <= maxLength
+    }
+    
+    func addTapGestureToHideKeyboard() {
+        let tapGesture = UITapGestureRecognizer(target: view, action: #selector(view.endEditing))
+        view.addGestureRecognizer(tapGesture)
+        tapGesture.cancelsTouchesInView = false
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
     
     @objc private func textFieldDidChange(_ textField: UITextField) {

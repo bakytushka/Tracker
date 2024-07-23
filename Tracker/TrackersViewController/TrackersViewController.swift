@@ -12,10 +12,10 @@ import UIKit
 final class TrackersViewController: UIViewController {
     
     private let dateFormatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "dd.MM.yyyy"
-            return formatter
-        }()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.yyyy"
+        return formatter
+    }()
     
     private var categories: [TrackerCategory] = []
     private var completedTrackers: Set<TrackerRecord> = []
@@ -125,7 +125,10 @@ final class TrackersViewController: UIViewController {
     
     func addTracker(_ tracker: Tracker, to categoryIndex: Int) {
         if categoryIndex < categories.count {
-            categories[categoryIndex].trackers.append(tracker)
+            var updatedTrackers = categories[categoryIndex].trackers
+            updatedTrackers.append(tracker)
+            let updatedCategory = TrackerCategory(title: categories[categoryIndex].title, trackers: updatedTrackers)
+            categories[categoryIndex] = updatedCategory
         } else {
             let newCategory = TrackerCategory(title: "Радостные мелочи", trackers: [tracker])
             categories.append(newCategory)

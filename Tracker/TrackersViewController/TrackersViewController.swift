@@ -11,6 +11,12 @@ import UIKit
 
 final class TrackersViewController: UIViewController {
     
+    private let dateFormatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd.MM.yyyy"
+            return formatter
+        }()
+    
     private var categories: [TrackerCategory] = []
     private var completedTrackers: Set<TrackerRecord> = []
     private var currentCategories: [TrackerCategory] = []
@@ -304,8 +310,6 @@ extension TrackersViewController: TrackerViewCellDelegate {
 
 extension TrackersViewController: NewTrackerViewControllerDelegate {
     func setDateForNewTracker() -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd.MM.yyyy"
         return dateFormatter.string(from: currentDate)
     }
     

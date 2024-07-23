@@ -9,8 +9,8 @@ import Foundation
 import UIKit
 
 final class ScheduleTableViewCell: UITableViewCell {
-    let titleLabel = UILabel()
-    let switchView = UISwitch()
+    private let titleLabel = UILabel()
+    private let switchView = UISwitch()
     
     static let reuseIdentifier = "ScheduleTableViewCell"
     

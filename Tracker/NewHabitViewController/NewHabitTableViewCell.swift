@@ -9,10 +9,10 @@ import Foundation
 import UIKit
 
 final class NewHabitTableViewCell: UITableViewCell {
-    let stackView = UIStackView()
-    let label = UILabel()
-    let dayslabel = UILabel()
-    let chevronImageView = UIImageView(image: UIImage(systemName: "chevron.right"))
+    private let stackView = UIStackView()
+    private let label = UILabel()
+    private let daysLabel = UILabel()
+    private let chevronImageView = UIImageView(image: UIImage(systemName: "chevron.right"))
     
     static let reuseIdentifier = "NewHabitTableViewCell"
     
@@ -33,15 +33,15 @@ final class NewHabitTableViewCell: UITableViewCell {
         stackView.distribution = .fill
         
         stackView.addArrangedSubview(label)
-        stackView.addArrangedSubview(dayslabel)
+        stackView.addArrangedSubview(daysLabel)
         
-        dayslabel.textColor = .gray
+        daysLabel.textColor = .gray
         chevronImageView.tintColor = .gray
         
         contentView.addSubview(stackView)
         contentView.addSubview(chevronImageView)
         
-        [stackView, dayslabel, label, chevronImageView].forEach {
+        [stackView, daysLabel, label, chevronImageView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
         
@@ -60,7 +60,7 @@ final class NewHabitTableViewCell: UITableViewCell {
     }
     
     func setSelectedDays(_ selectedDays: String) {
-        dayslabel.text = selectedDays
-        dayslabel.isHidden = selectedDays.isEmpty
+        daysLabel.text = selectedDays
+        daysLabel.isHidden = selectedDays.isEmpty
     }
 }

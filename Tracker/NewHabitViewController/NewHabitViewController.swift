@@ -35,7 +35,6 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
         frame: .zero,
         collectionViewLayout: UICollectionViewFlowLayout()
     )
-    //private var itemWidth: CGFloat = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -396,7 +395,6 @@ extension NewHabitViewController: UICollectionViewDelegate {
         })
         return true
     }
-    
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch indexPath.section {

@@ -74,7 +74,11 @@ final class ScheduleViewController: UIViewController {
     }
     
     private func setupInitialValues() {
-        WeekDay.allCases.forEach { selectedDays[$0] = false }
+        WeekDay.allCases.forEach { day in
+            if selectedDays[day] == nil {
+                selectedDays[day] = false
+            }
+        }
     }
     
     @objc private func switchViewChanged(sender: UISwitch) {

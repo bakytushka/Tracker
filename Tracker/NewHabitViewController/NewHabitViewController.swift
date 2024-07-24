@@ -35,6 +35,7 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
         frame: .zero,
         collectionViewLayout: UICollectionViewFlowLayout()
     )
+    //private var itemWidth: CGFloat = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,6 +80,14 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
     }
     
     private func setupCollectionView() {
+        let layout = UICollectionViewFlowLayout()
+        let itemSpacing: CGFloat = 5
+        let lineSpacing: CGFloat = 0
+        
+        layout.minimumInteritemSpacing = itemSpacing
+        layout.minimumLineSpacing = lineSpacing
+        collectionView.collectionViewLayout = layout
+        
         collectionView.backgroundColor = .white
         collectionView.isScrollEnabled = false
         collectionView.allowsMultipleSelection = true
@@ -356,21 +365,25 @@ extension NewHabitViewController: UICollectionViewDelegateFlowLayout {
         let indexPath = IndexPath(row: 0, section: section)
         let headerView = self.collectionView(collectionView, viewForSupplementaryElementOfKind: UICollectionView.elementKindSectionHeader, at: indexPath)
         
+        let targetSize = CGSize(width: collectionView.frame.width, height: UIView.layoutFittingCompressedSize.height)
+        
         return headerView.systemLayoutSizeFitting(
-            CGSize(
-                width: collectionView.frame.width,
-                height: 34),
+            targetSize,
             withHorizontalFittingPriority: .required,
             verticalFittingPriority: .fittingSizeLevel
         )
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 52, height: 52)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 1
+        let itemsPerRow: CGFloat = 6
+        let spacing: CGFloat = 5
+        
+        let totalSpacing = (itemsPerRow - 1) * spacing
+        let availableWidth = collectionView.bounds.width - totalSpacing
+        let itemWidth = availableWidth / itemsPerRow
+        
+        let itemSize = max(itemWidth, 0)
+        return CGSize(width: itemSize, height: itemSize)
     }
 }
 

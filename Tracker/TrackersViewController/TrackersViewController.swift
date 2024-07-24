@@ -28,6 +28,7 @@ final class TrackersViewController: UIViewController {
     
     private var stubImageView = UIImageView()
     private var stubLabel = UILabel()
+    private var isSearching: Bool = false
     
     var currentDate: Date = Date()
     let datePicker = UIDatePicker()
@@ -43,18 +44,28 @@ final class TrackersViewController: UIViewController {
         setupStubLabel()
         updateUI()
     }
-    
+
     private func updateUI() {
         if currentCategories.isEmpty {
-            stubImageView.isHidden = false
-            stubLabel.isHidden = false
-            collectionView.isHidden = true
+            showStub(isSearching: isSearching)
         } else {
-            stubImageView.isHidden = true
-            stubLabel.isHidden = true
-            collectionView.isHidden = false
-            collectionView.reloadData()
+            hideStub()
         }
+        collectionView.reloadData()
+    }
+
+    private func showStub(isSearching: Bool) {
+        stubLabel.text = isSearching ? "Ничего не найдено" : "Что будем отслеживать?"
+        stubImageView.image = UIImage(named: isSearching ? "plug" : "stub")
+        stubImageView.isHidden = false
+        stubLabel.isHidden = false
+        collectionView.isHidden = true
+    }
+
+    private func hideStub() {
+        stubImageView.isHidden = true
+        stubLabel.isHidden = true
+        collectionView.isHidden = false
     }
     
     private func setupTrackersCollectionView() {
@@ -112,7 +123,7 @@ final class TrackersViewController: UIViewController {
     
     private func setupStubLabel() {
         stubLabel.text = "Что будем отслеживать?"
-        stubLabel.font = UIFont.systemFont(ofSize: 12)
+        stubLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         
         stubLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(stubLabel)
@@ -138,6 +149,7 @@ final class TrackersViewController: UIViewController {
     }
     
     private func filteredTrackers() {
+        isSearching = true
         let calendar = Calendar.current
         let selectedWeekDay = calendar.component(.weekday, from: currentDate) - 1
         let selectedDayString = WeekDay(rawValue: selectedWeekDay)?.stringValue ?? ""
@@ -148,11 +160,12 @@ final class TrackersViewController: UIViewController {
             }
             return !filteredTrackers.isEmpty ? TrackerCategory(title: category.title, trackers: filteredTrackers) : nil
         }
-        collectionView.reloadData()
+        updateUI()
     }
     
     @objc func datePickerValueChanged(_ sender: UIDatePicker) {
         currentDate = sender.date
+        isSearching = false
         filteredTrackers()
         updateUI()
     }

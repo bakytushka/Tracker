@@ -170,11 +170,12 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
             cancelButton.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor),
             cancelButton.heightAnchor.constraint(equalToConstant: 60),
             cancelButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
-            cancelButton.widthAnchor.constraint(equalToConstant: 166),
+            cancelButton.trailingAnchor.constraint(equalTo: createButton.leadingAnchor, constant: -8),
+            
             createButton.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor),
             createButton.topAnchor.constraint(equalTo: collectionView.bottomAnchor,constant: 10),
             createButton.heightAnchor.constraint(equalToConstant: 60),
-            createButton.widthAnchor.constraint(equalToConstant: 166),
+            createButton.widthAnchor.constraint(equalTo: cancelButton.widthAnchor),
             createButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
         ])
     }

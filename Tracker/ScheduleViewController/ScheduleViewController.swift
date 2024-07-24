@@ -50,6 +50,7 @@ final class ScheduleViewController: UIViewController {
         tableView.layer.cornerRadius = 16
         tableView.isScrollEnabled = false
         tableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: ScheduleTableViewCell.reuseIdentifier)
+        tableView.separatorStyle = .none
     }
     
     private func setupConstraints() {
@@ -118,10 +119,22 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row == daysOfWeek.count - 1 {
-            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
+        let separatorView = UIView()
+        separatorView.backgroundColor = UIColor.separator
+        separatorView.translatesAutoresizingMaskIntoConstraints = false
+        cell.contentView.addSubview(separatorView)
+        
+        NSLayoutConstraint.activate([
+            separatorView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 16),
+            separatorView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -16),
+            separatorView.heightAnchor.constraint(equalToConstant: 0.5)
+        ])
+        
+        if indexPath.row < daysOfWeek.count - 1 {
+            separatorView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor).isActive = true
         } else {
-            cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+            separatorView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor).isActive = true
+            separatorView.isHidden = true
         }
     }
 }

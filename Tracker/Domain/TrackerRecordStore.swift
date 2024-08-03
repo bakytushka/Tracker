@@ -83,19 +83,27 @@ final class TrackerRecordStore: NSObject, NSFetchedResultsControllerDelegate {
     }
     
     func deleteTrackerRecord(trackerRecord: TrackerRecord) throws {
-        guard let record = fetchedResultsController?.fetchedObjects?.first(where: {
-            $0.trackerID == trackerRecord.trackerID && $0.date == trackerRecord.date
-        }) else {
-            throw StoreError.decodeError
-        }
-        context.delete(record)
+        let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(
+            format: "trackerID == %@ AND date == %@",
+            trackerRecord.trackerID as CVarArg,
+            trackerRecord.date as CVarArg
+        )
+        
         do {
+            let trackerRecordEntities = try context.fetch(fetchRequest)
+            for entity in trackerRecordEntities {
+                context.delete(entity)
+            }
+            
             try context.save()
         } catch {
-            throw StoreError.decodeError
+            print("Error deleting tracker record: \(error)")
+            throw error
         }
+        
     }
-  
+    
     func fetchTrackerRecords() throws -> Set<TrackerRecord> {
         let fetchRequest = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
         do {

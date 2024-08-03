@@ -8,10 +8,6 @@
 import CoreData
 import UIKit
 
-enum StoreError: Error {
-    case decodeError
-}
-
 final class TrackerStore: NSObject {
     public weak var delegate: TrackerCategoryStoreDelegate?
 
@@ -115,4 +111,8 @@ extension TrackerStore: NSFetchedResultsControllerDelegate {
 
 protocol TrackerCategoryStoreDelegate: AnyObject {
     func didUpdateCategories()
+}
+
+enum StoreError: Error {
+    case decodeError
 }

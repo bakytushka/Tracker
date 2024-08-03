@@ -47,6 +47,7 @@ final class TrackersViewController: UIViewController {
         setupStubLabel()
         syncData()
         updateUI()
+        loadCompletedTrackers()
     }
     
     private func syncData() {
@@ -59,7 +60,32 @@ final class TrackersViewController: UIViewController {
         }
         updateUI()
     }
-    
+
+    private func loadCompletedTrackers() {
+        do {
+            completedTrackers = try trackerRecordStore.fetchTrackerRecords()
+            collectionView.reloadData()
+        } catch {
+            print("Error loading completed trackers: \(error)")
+        }
+    }
+
+    private func saveCompletedTracker(_ trackerRecord: TrackerRecord) {
+        do {
+            try trackerRecordStore.addTrackerRecord(from: trackerRecord)
+        } catch {
+            print("Error saving completed tracker: \(error)")
+        }
+    }
+
+    private func removeCompletedTracker(_ trackerRecord: TrackerRecord) {
+        do {
+            try trackerRecordStore.deleteTrackerRecord(trackerRecord: trackerRecord)
+        } catch {
+            print("Error removing completed tracker: \(error)")
+        }
+    }
+
     private func updateUI() {
         if currentCategories.isEmpty {
             showStub(isSearching: isSearching)
@@ -331,20 +357,18 @@ extension TrackersViewController: TrackerViewCellDelegate {
         if currentDate <= Date() {
             let trackerRecord = TrackerRecord(trackerID: id, date: datePicker.date)
             completedTrackers.insert(trackerRecord)
+            saveCompletedTracker(trackerRecord)
             collectionView.reloadItems(at: [indexPath])
         }
     }
     
     func uncompleteTracker(id: UUID, at indexPath: IndexPath) {
-        /*      if let trackerRecordToDelete = completedTrackers.first(where: { $0.trackerID == id }) {
-         completedTrackers.remove(trackerRecordToDelete)
-         collectionView.reloadItems(at: [indexPath])
-         }
-         */
         completedTrackers = completedTrackers.filter { trackerRecord in
             !isSameTrackerRecord(trackerRecord: trackerRecord, id: id)
         }
         
+        let trackerRecord = TrackerRecord(trackerID: id, date: datePicker.date)
+        removeCompletedTracker(trackerRecord)
         collectionView.reloadItems(at: [indexPath])
     }
     
@@ -356,8 +380,18 @@ extension TrackersViewController: TrackerViewCellDelegate {
         switch sender {
         case true:
             completedTrackers.insert(newRecord)
+            do {
+                try trackerRecordStore.addTrackerRecord(from: newRecord)
+            } catch {
+                print("Failed to save tracker record: \(error)")
+            }
         case false:
             completedTrackers.remove(newRecord)
+            do {
+                try trackerRecordStore.deleteTrackerRecord(trackerRecord: newRecord)
+            } catch {
+                print("Failed to delete tracker record: \(error)")
+            }
         }
         
         collectionView.reloadItems(at: [indexPath])

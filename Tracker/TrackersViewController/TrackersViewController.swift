@@ -5,11 +5,13 @@
 //  Created by Bakyt Temishov on 30.06.2024.
 //
 
-
 import Foundation
 import UIKit
 
 final class TrackersViewController: UIViewController {
+    private let trackerCategoryStore = TrackerCategoryStore()
+    private let trackerStore = TrackerStore()
+    private let trackerRecordStore = TrackerRecordStore()
     
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -17,6 +19,7 @@ final class TrackersViewController: UIViewController {
         return formatter
     }()
     
+    private var trackers = [Tracker]()
     private var categories: [TrackerCategory] = []
     private var completedTrackers: Set<TrackerRecord> = []
     private var currentCategories: [TrackerCategory] = []
@@ -42,7 +45,45 @@ final class TrackersViewController: UIViewController {
         setupTrackersCollectionView()
         setupStubImage()
         setupStubLabel()
+        syncData()
         updateUI()
+        loadCompletedTrackers()
+    }
+    
+    private func syncData() {
+        trackerCategoryStore.delegate = self
+        trackerStore.delegate = self
+        fetchCategory()
+        if !categories.isEmpty {
+            currentCategories = categories
+            collectionView.reloadData()
+        }
+        updateUI()
+    }
+
+    private func loadCompletedTrackers() {
+        do {
+            completedTrackers = try trackerRecordStore.fetchTrackerRecords()
+            collectionView.reloadData()
+        } catch {
+            print("Error loading completed trackers: \(error)")
+        }
+    }
+
+    private func saveCompletedTracker(_ trackerRecord: TrackerRecord) {
+        do {
+            try trackerRecordStore.addTrackerRecord(from: trackerRecord)
+        } catch {
+            print("Error saving completed tracker: \(error)")
+        }
+    }
+
+    private func removeCompletedTracker(_ trackerRecord: TrackerRecord) {
+        do {
+            try trackerRecordStore.deleteTrackerRecord(trackerRecord: trackerRecord)
+        } catch {
+            print("Error removing completed tracker: \(error)")
+        }
     }
 
     private func updateUI() {
@@ -53,7 +94,7 @@ final class TrackersViewController: UIViewController {
         }
         collectionView.reloadData()
     }
-
+    
     private func showStub(isSearching: Bool) {
         stubLabel.text = isSearching ? "Ничего не найдено" : "Что будем отслеживать?"
         stubImageView.image = UIImage(named: isSearching ? "plug" : "stub")
@@ -61,7 +102,7 @@ final class TrackersViewController: UIViewController {
         stubLabel.isHidden = false
         collectionView.isHidden = true
     }
-
+    
     private func hideStub() {
         stubImageView.isHidden = true
         stubLabel.isHidden = true
@@ -135,17 +176,38 @@ final class TrackersViewController: UIViewController {
     }
     
     func addTracker(_ tracker: Tracker, to categoryIndex: Int) {
-        if categoryIndex < categories.count {
-            var updatedTrackers = categories[categoryIndex].trackers
-            updatedTrackers.append(tracker)
-            let updatedCategory = TrackerCategory(title: categories[categoryIndex].title, trackers: updatedTrackers)
-            categories[categoryIndex] = updatedCategory
-        } else {
-            let newCategory = TrackerCategory(title: "Радостные мелочи", trackers: [tracker])
-            categories.append(newCategory)
+        do {
+            var newCategories = categories
+            if categoryIndex < newCategories.count {
+                let categoryToUpdate = newCategories[categoryIndex]
+                var updatedTrackers = categoryToUpdate.trackers
+                updatedTrackers.append(tracker)
+                let updatedCategory = TrackerCategory(
+                    title: categoryToUpdate.title,
+                    trackers: updatedTrackers
+                )
+                newCategories[categoryIndex] = updatedCategory
+            } else {
+                let newCategory = TrackerCategory(
+                    title: "Новая категория",
+                    trackers: [tracker]
+                )
+                newCategories.append(newCategory)
+            }
+            
+            currentCategories = newCategories
+            if try trackerCategoryStore.fetchCategories().filter({ $0.title == "Новая категория" }).isEmpty {
+                let newCategoryCoreData = TrackerCategory(title: "Новая категория", trackers: [])
+                try trackerCategoryStore.addNewCategory(newCategoryCoreData)
+            }
+            
+            createCategoryAndTracker(tracker: tracker, with: "Новая категория")
+            fetchCategory()
+            collectionView.reloadData()
+            updateUI()
+        } catch {
+            print("Error: \(error)")
         }
-        currentCategories = categories
-        updateUI()
     }
     
     private func filteredTrackers() {
@@ -295,7 +357,7 @@ extension TrackersViewController: TrackerViewCellDelegate {
         if currentDate <= Date() {
             let trackerRecord = TrackerRecord(trackerID: id, date: datePicker.date)
             completedTrackers.insert(trackerRecord)
-            
+            saveCompletedTracker(trackerRecord)
             collectionView.reloadItems(at: [indexPath])
         }
     }
@@ -305,6 +367,8 @@ extension TrackersViewController: TrackerViewCellDelegate {
             !isSameTrackerRecord(trackerRecord: trackerRecord, id: id)
         }
         
+        let trackerRecord = TrackerRecord(trackerID: id, date: datePicker.date)
+        removeCompletedTracker(trackerRecord)
         collectionView.reloadItems(at: [indexPath])
     }
     
@@ -316,8 +380,18 @@ extension TrackersViewController: TrackerViewCellDelegate {
         switch sender {
         case true:
             completedTrackers.insert(newRecord)
+            do {
+                try trackerRecordStore.addTrackerRecord(from: newRecord)
+            } catch {
+                print("Failed to save tracker record: \(error)")
+            }
         case false:
             completedTrackers.remove(newRecord)
+            do {
+                try trackerRecordStore.deleteTrackerRecord(trackerRecord: newRecord)
+            } catch {
+                print("Failed to delete tracker record: \(error)")
+            }
         }
         
         collectionView.reloadItems(at: [indexPath])
@@ -331,5 +405,43 @@ extension TrackersViewController: NewTrackerViewControllerDelegate {
     
     func didCreateNewTracker(_ tracker: Tracker) {
         addTracker(tracker, to: 0)
+    }
+}
+
+extension TrackersViewController: TrackerCategoryStoreDelegate {
+    func didUpdateCategories() {
+        collectionView.reloadData()
+    }
+}
+
+extension TrackersViewController {
+    private func fetchCategory() {
+        do {
+            let coreDataCategories = try trackerCategoryStore.fetchCategories()
+            categories = coreDataCategories.compactMap { coreDataCategory in
+                trackerCategoryStore.updateTrackerCategory(coreDataCategory)
+            }
+            
+            var trackers = [Tracker]()
+            for currentCategories in currentCategories {
+                for tracker in currentCategories.trackers {
+                    let newTracker = Tracker(
+                        id: tracker.id,
+                        name: tracker.name,
+                        color: tracker.color,
+                        emoji: tracker.emoji,
+                        schedule: tracker.schedule)
+                    trackers.append(newTracker)
+                }
+            }
+            
+            self.trackers = trackers
+        } catch {
+            print("Error fetching categories: \(error)")
+        }
+    }
+    
+    private func createCategoryAndTracker(tracker: Tracker, with titleCategory: String) {
+        trackerCategoryStore.createCategoryAndTracker(tracker: tracker, with: titleCategory)
     }
 }

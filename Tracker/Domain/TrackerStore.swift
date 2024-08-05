@@ -12,7 +12,6 @@ final class TrackerStore: NSObject {
     public weak var delegate: TrackerCategoryStoreDelegate?
 
     private let context: NSManagedObjectContext
-    private let uiColorMarshalling = UIColorMarshalling()
     private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>?
 
     convenience override init() {
@@ -55,7 +54,7 @@ final class TrackerStore: NSObject {
         newTracker.name = tracker.name
         newTracker.emoji = tracker.emoji
         newTracker.schedule = tracker.schedule.joined(separator: ",")
-        newTracker.color = uiColorMarshalling.hexString(from: tracker.color)
+        newTracker.color = UIColorMarshalling.hexString(from: tracker.color)
         return newTracker
     }
 
@@ -67,7 +66,7 @@ final class TrackerStore: NSObject {
                 return Tracker(
                     id: trackerCoreData.id ?? UUID(),
                     name: trackerCoreData.name ?? "",
-                    color: uiColorMarshalling.color(from: trackerCoreData.color ?? ""),
+                    color: UIColorMarshalling.color(from: trackerCoreData.color ?? ""),
                     emoji: trackerCoreData.emoji ?? "",
                     schedule: trackerCoreData.schedule?.components(separatedBy: ",") ?? []
                 )
@@ -96,7 +95,7 @@ final class TrackerStore: NSObject {
         return Tracker(
             id: id,
             name: name,
-            color: uiColorMarshalling.color(from: color),
+            color: UIColorMarshalling.color(from: color),
             emoji: emoji,
             schedule: trackersCoreData.schedule?.components(separatedBy: ",") ?? []
         )

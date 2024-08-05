@@ -10,10 +10,12 @@ import CoreData
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-        lazy var persistentContainer: NSPersistentContainer = {
+    lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "Model")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
+                print("Unresolved error \(error), \(error.userInfo)")
+                assertionFailure("Unresolved error \(error), \(error.userInfo)")
             }
         })
         return container
@@ -26,7 +28,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 try context.save()
             } catch {
                 let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+                print("Unresolved error \(nserror), \(nserror.userInfo)")
+                assertionFailure("Unresolved error \(nserror), \(nserror.userInfo)")
             }
         }
     }

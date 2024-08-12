@@ -13,6 +13,8 @@
 		8A4119592C31951200FD294C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8A4119572C31951200FD294C /* LaunchScreen.storyboard */; };
 		8A4119612C31A7AF00FD294C /* TrackersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A4119602C31A7AE00FD294C /* TrackersViewController.swift */; };
 		8A4119642C31BD4B00FD294C /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A4119632C31BD4B00FD294C /* TabBarController.swift */; };
+		8A73F7822C694D0F00284DDC /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A73F7812C694D0F00284DDC /* OnboardingViewController.swift */; };
+		8A73F7842C6953B400284DDC /* OnboardingPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A73F7832C6953B400284DDC /* OnboardingPageViewController.swift */; };
 		8A8A8B002C45BE2600FA508E /* NewTrackerCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A8A8AFF2C45BE2600FA508E /* NewTrackerCollectionViewCell.swift */; };
 		8A8A8B022C45BF4E00FA508E /* NewTrackerHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A8A8B012C45BF4E00FA508E /* NewTrackerHeaderView.swift */; };
 		8A8A8B042C45C50100FA508E /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A8A8B032C45C50100FA508E /* Constants.swift */; };
@@ -44,6 +46,8 @@
 		8A41195A2C31951200FD294C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8A4119602C31A7AE00FD294C /* TrackersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackersViewController.swift; sourceTree = "<group>"; };
 		8A4119632C31BD4B00FD294C /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
+		8A73F7812C694D0F00284DDC /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		8A73F7832C6953B400284DDC /* OnboardingPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageViewController.swift; sourceTree = "<group>"; };
 		8A8A8AFF2C45BE2600FA508E /* NewTrackerCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTrackerCollectionViewCell.swift; sourceTree = "<group>"; };
 		8A8A8B012C45BF4E00FA508E /* NewTrackerHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTrackerHeaderView.swift; sourceTree = "<group>"; };
 		8A8A8B032C45C50100FA508E /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -108,6 +112,7 @@
 				8A4119622C31BD2500FD294C /* TabBarController */,
 				8ADD16AA2C572F1C0095487D /* Domain */,
 				8ADD16A92C56EAD90095487D /* CoreData */,
+				8A73F7802C694A5200284DDC /* Onboarding */,
 				8A4119552C31951200FD294C /* Assets.xcassets */,
 				8A4119572C31951200FD294C /* LaunchScreen.storyboard */,
 				8A41195A2C31951200FD294C /* Info.plist */,
@@ -176,6 +181,15 @@
 				8ADFB5102C42F40900BCB7B6 /* NewHabitTableViewCell.swift */,
 			);
 			path = NewHabitViewController;
+			sourceTree = "<group>";
+		};
+		8A73F7802C694A5200284DDC /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				8A73F7812C694D0F00284DDC /* OnboardingViewController.swift */,
+				8A73F7832C6953B400284DDC /* OnboardingPageViewController.swift */,
+			);
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 		8ABD89832C3363FC003A0625 /* Models */ = {
@@ -277,6 +291,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A73F7842C6953B400284DDC /* OnboardingPageViewController.swift in Sources */,
 				8ABD89852C33642F003A0625 /* Tracker.swift in Sources */,
 				8ABD898D2C3C366F003A0625 /* TrackersViewCell.swift in Sources */,
 				8ABD89892C3366BF003A0625 /* TrackerRecord.swift in Sources */,
@@ -289,6 +304,7 @@
 				8A8A8B022C45BF4E00FA508E /* NewTrackerHeaderView.swift in Sources */,
 				8ADD16B52C587D2A0095487D /* UIColorMarshalling.swift in Sources */,
 				8A8A8B002C45BE2600FA508E /* NewTrackerCollectionViewCell.swift in Sources */,
+				8A73F7822C694D0F00284DDC /* OnboardingViewController.swift in Sources */,
 				8ABD89912C3D8829003A0625 /* HeaderViewController.swift in Sources */,
 				8A41194F2C31951000FD294C /* SceneDelegate.swift in Sources */,
 				8ADFB50F2C42EDF000BCB7B6 /* NewIrregularEventViewController.swift in Sources */,

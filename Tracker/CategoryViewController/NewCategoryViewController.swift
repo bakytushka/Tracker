@@ -8,7 +8,13 @@
 import Foundation
 import UIKit
 
+protocol NewCategoryViewControllerDelegate: AnyObject {
+    func didAddCategory(name: String)
+}
+
 final class NewCategoryViewController: UIViewController, UITextFieldDelegate {
+    weak var delegate: NewCategoryViewControllerDelegate?
+    
     private lazy var doneButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = Colors.buttonInactive
@@ -16,6 +22,7 @@ final class NewCategoryViewController: UIViewController, UITextFieldDelegate {
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.setTitleColor(.white, for: .normal)
         button.setTitle("Готово", for: .normal)
+        button.isEnabled = false
         button.addTarget(self, action: #selector(doneButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -78,10 +85,14 @@ final class NewCategoryViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc func doneButtonTapped() {
-        
+        guard let categoryName = nameCategoryTextField.text, !categoryName.isEmpty else { return }
+           delegate?.didAddCategory(name: categoryName)
+           dismiss(animated: true, completion: nil)
     }
     
     @objc private func textFieldDidChange(_ textField: UITextField) {
-        
+        let isTextFieldEmpty = textField.text?.isEmpty ?? true
+            doneButton.isEnabled = !isTextFieldEmpty
+        doneButton.backgroundColor = isTextFieldEmpty ? Colors.buttonInactive : Colors.buttonActive
     }
 }

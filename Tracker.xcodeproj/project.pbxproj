@@ -15,6 +15,9 @@
 		8A4119642C31BD4B00FD294C /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A4119632C31BD4B00FD294C /* TabBarController.swift */; };
 		8A73F7822C694D0F00284DDC /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A73F7812C694D0F00284DDC /* OnboardingViewController.swift */; };
 		8A73F7842C6953B400284DDC /* OnboardingPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A73F7832C6953B400284DDC /* OnboardingPageViewController.swift */; };
+		8A73F7872C6C310C00284DDC /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A73F7862C6C310C00284DDC /* CategoryViewController.swift */; };
+		8A73F7892C6C38DA00284DDC /* CategoryViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A73F7882C6C38DA00284DDC /* CategoryViewCell.swift */; };
+		8A73F78B2C6C3C6C00284DDC /* NewCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A73F78A2C6C3C6C00284DDC /* NewCategoryViewController.swift */; };
 		8A8A8B002C45BE2600FA508E /* NewTrackerCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A8A8AFF2C45BE2600FA508E /* NewTrackerCollectionViewCell.swift */; };
 		8A8A8B022C45BF4E00FA508E /* NewTrackerHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A8A8B012C45BF4E00FA508E /* NewTrackerHeaderView.swift */; };
 		8A8A8B042C45C50100FA508E /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A8A8B032C45C50100FA508E /* Constants.swift */; };
@@ -48,6 +51,9 @@
 		8A4119632C31BD4B00FD294C /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		8A73F7812C694D0F00284DDC /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
 		8A73F7832C6953B400284DDC /* OnboardingPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageViewController.swift; sourceTree = "<group>"; };
+		8A73F7862C6C310C00284DDC /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
+		8A73F7882C6C38DA00284DDC /* CategoryViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewCell.swift; sourceTree = "<group>"; };
+		8A73F78A2C6C3C6C00284DDC /* NewCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCategoryViewController.swift; sourceTree = "<group>"; };
 		8A8A8AFF2C45BE2600FA508E /* NewTrackerCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTrackerCollectionViewCell.swift; sourceTree = "<group>"; };
 		8A8A8B012C45BF4E00FA508E /* NewTrackerHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTrackerHeaderView.swift; sourceTree = "<group>"; };
 		8A8A8B032C45C50100FA508E /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -108,6 +114,7 @@
 				8A41F3692C46C43100362C37 /* NewHabitViewController */,
 				8A41F3672C46C3EF00362C37 /* NewIrregularEventViewController */,
 				8A41F3662C46C3D300362C37 /* ScheduleViewController */,
+				8A73F7852C6C30E400284DDC /* CategoryViewController */,
 				8A41F3652C46C37300362C37 /* StatisticViewController */,
 				8A4119622C31BD2500FD294C /* TabBarController */,
 				8ADD16AA2C572F1C0095487D /* Domain */,
@@ -190,6 +197,16 @@
 				8A73F7832C6953B400284DDC /* OnboardingPageViewController.swift */,
 			);
 			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		8A73F7852C6C30E400284DDC /* CategoryViewController */ = {
+			isa = PBXGroup;
+			children = (
+				8A73F7862C6C310C00284DDC /* CategoryViewController.swift */,
+				8A73F7882C6C38DA00284DDC /* CategoryViewCell.swift */,
+				8A73F78A2C6C3C6C00284DDC /* NewCategoryViewController.swift */,
+			);
+			path = CategoryViewController;
 			sourceTree = "<group>";
 		};
 		8ABD89832C3363FC003A0625 /* Models */ = {
@@ -302,12 +319,15 @@
 				8A41194D2C31951000FD294C /* AppDelegate.swift in Sources */,
 				8ADD16A82C56EABC0095487D /* Model.xcdatamodeld in Sources */,
 				8A8A8B022C45BF4E00FA508E /* NewTrackerHeaderView.swift in Sources */,
+				8A73F7892C6C38DA00284DDC /* CategoryViewCell.swift in Sources */,
 				8ADD16B52C587D2A0095487D /* UIColorMarshalling.swift in Sources */,
 				8A8A8B002C45BE2600FA508E /* NewTrackerCollectionViewCell.swift in Sources */,
 				8A73F7822C694D0F00284DDC /* OnboardingViewController.swift in Sources */,
 				8ABD89912C3D8829003A0625 /* HeaderViewController.swift in Sources */,
 				8A41194F2C31951000FD294C /* SceneDelegate.swift in Sources */,
+				8A73F7872C6C310C00284DDC /* CategoryViewController.swift in Sources */,
 				8ADFB50F2C42EDF000BCB7B6 /* NewIrregularEventViewController.swift in Sources */,
+				8A73F78B2C6C3C6C00284DDC /* NewCategoryViewController.swift in Sources */,
 				8ADFB5152C442AF500BCB7B6 /* ScheduleTableViewCell.swift in Sources */,
 				8ADD16B12C572F850095487D /* TrackerCategoryStore.swift in Sources */,
 				8ADD16AF2C572F730095487D /* TrackerStore.swift in Sources */,

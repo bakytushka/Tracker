@@ -157,7 +157,7 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
             nameTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
             nameTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
-            nameTextField.widthAnchor.constraint(equalToConstant: 343),
+            //           nameTextField.widthAnchor.constraint(equalToConstant: 343),
             
             tableView.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
@@ -272,18 +272,52 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if indexPath.row == 1 {
-            let newViewController = ScheduleViewController()
-            newViewController.selectedDays = selectedDays
-            newViewController.delegate = self
-            
-            newViewController.navigationItem.title = "Расписание"
-            navigationController?.isNavigationBarHidden = false
-            
-            let navigationController = UINavigationController(rootViewController: newViewController)
-            self.present(navigationController, animated: true, completion: nil)
+        let viewController: UIViewController
+        let title: String
+        
+        switch indexPath.row {
+        case 0:
+            viewController = CategoryViewController()
+            title = "Категория"
+        case 1:
+            let scheduleViewController = ScheduleViewController()
+            scheduleViewController.selectedDays = selectedDays
+            scheduleViewController.delegate = self
+            viewController = scheduleViewController
+            title = "Расписание"
+        default:
+            return
         }
+        
+        viewController.navigationItem.title = title
+        navigationController?.isNavigationBarHidden = false
+        
+        let navigationController = UINavigationController(rootViewController: viewController)
+        self.present(navigationController, animated: true, completion: nil)
     }
+    /*       if indexPath.row == 0 {
+     let newViewController = CategoryViewController()
+     //      newViewController.delegate = self
+     
+     newViewController.navigationItem.title = "Категория"
+     navigationController?.isNavigationBarHidden = false
+     
+     let navigationController = UINavigationController(rootViewController: newViewController)
+     self.present(navigationController, animated: true, completion: nil)
+     }
+     
+     if indexPath.row == 1 {
+     let newViewController = ScheduleViewController()
+     newViewController.selectedDays = selectedDays
+     newViewController.delegate = self
+     
+     newViewController.navigationItem.title = "Расписание"
+     navigationController?.isNavigationBarHidden = false
+     
+     let navigationController = UINavigationController(rootViewController: newViewController)
+     self.present(navigationController, animated: true, completion: nil)
+     }
+     } */
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75

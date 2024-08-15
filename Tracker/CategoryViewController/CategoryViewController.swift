@@ -80,19 +80,6 @@ final class CategoryViewController: UIViewController {
         loadCategories()
     }
     
-    /*   private func loadCategories() {
-     do {
-     categories = try trackerCategoryStore.fetchCategories().compactMap {
-     trackerCategoryStore.updateTrackerCategory($0)
-     }
-     tableView.reloadData()
-     updateStubViewVisibility()
-     updateTableViewHeight()
-     } catch {
-     print("Failed to load categories: \(error)")
-     }
-     } */
-    
     private func loadCategories() {
         do {
             viewModel.categories = try trackerCategoryStore.fetchCategories().compactMap {
@@ -103,23 +90,6 @@ final class CategoryViewController: UIViewController {
             print("Failed to load categories: \(error)")
         }
     }
-    
-    /*   private func loadCategories() {
-     DispatchQueue.global(qos: .background).async { [weak self] in
-     do {
-     guard let self = self else { return }
-     let fetchedCategories = try self.trackerCategoryStore.fetchCategories().compactMap {
-     self.trackerCategoryStore.updateTrackerCategory($0)
-     }
-     DispatchQueue.main.async {
-     self.viewModel.categories = fetchedCategories
-     self.viewModel.reloadData?(self.viewModel.categories)
-     }
-     } catch {
-     print("Failed to load categories: \(error)")
-     }
-     }
-     } */
     
     func updateStubViewVisibility() {
         let isEmpty = viewModel.categories.isEmpty
@@ -179,7 +149,7 @@ final class CategoryViewController: UIViewController {
         let navigationController = UINavigationController(rootViewController: newViewController)
         self.present(navigationController, animated: true, completion: nil)
     }
- 
+    
     private func bindViewModel() {
         viewModel.reloadData = { [weak self] categories in
             self?.tableView.reloadData()

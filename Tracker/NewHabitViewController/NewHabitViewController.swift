@@ -295,8 +295,6 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
         
         switch indexPath.row {
         case 0:
-//            let categoryVC = CategoryViewController()
-            //         categoryVC.selectedCategory = selectedCategory
             let trackerCategoryStore = TrackerCategoryStore()
             let categoryViewModel = CategoryViewModel(categoryStore: trackerCategoryStore)
             let categoryVC = CategoryViewController(viewModel: categoryViewModel)

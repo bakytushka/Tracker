@@ -212,9 +212,9 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
         let isColorSelected = selectedColor != nil
         
         let shouldEnableCreateButton = isNameTextFieldNotEmpty &&
-                                       isCategorySelected &&
-                                       isEmojiSelected &&
-                                       isColorSelected
+        isCategorySelected &&
+        isEmojiSelected &&
+        isColorSelected
         
         createButton.isEnabled = shouldEnableCreateButton
         createButton.backgroundColor = shouldEnableCreateButton ? .black : Colors.buttonInactive
@@ -260,7 +260,6 @@ extension NewIrregularEventViewController: UITableViewDataSource, UITableViewDel
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-  //      let categoryVC = CategoryViewController()
         let trackerCategoryStore = TrackerCategoryStore()
         let categoryViewModel = CategoryViewModel(categoryStore: trackerCategoryStore)
         let categoryVC = CategoryViewController(viewModel: categoryViewModel)

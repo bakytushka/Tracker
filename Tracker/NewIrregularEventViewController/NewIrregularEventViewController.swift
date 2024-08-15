@@ -9,6 +9,8 @@ import Foundation
 import UIKit
 
 final class NewIrregularEventViewController: UIViewController, UITextFieldDelegate {
+    private var selectedCategory: String?
+    
     private let nameTextField = UITextField()
     private let maxLength = 38
     
@@ -238,11 +240,18 @@ extension NewIrregularEventViewController: UITableViewDataSource, UITableViewDel
         }
         cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         cell.setTitle(categories[indexPath.row])
+        cell.setSelectedDays(selectedCategory ?? "")
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        let categoryVC = CategoryViewController()
+        categoryVC.navigationItem.title = "Категория"
+        categoryVC.delegate = self
+        
+        let navigationController = UINavigationController(rootViewController: categoryVC)
+        present(navigationController, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -365,5 +374,12 @@ extension NewIrregularEventViewController: UICollectionViewDelegate {
         default:
             break
         }
+    }
+}
+
+extension NewIrregularEventViewController: CategorySelectionDelegate {
+    func didSelectCategory(_ category: String) {
+        selectedCategory = category
+        tableView.reloadData()
     }
 }

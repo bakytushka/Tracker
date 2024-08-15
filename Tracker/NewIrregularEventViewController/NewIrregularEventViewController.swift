@@ -38,6 +38,7 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
         view.backgroundColor = .white
         setupUI()
         addTapGestureToHideKeyboard()
+        updateCreateButtonState()
     }
     
     private func setupUI(){
@@ -202,9 +203,21 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
     }
     
     @objc private func textFieldDidChange(_ textField: UITextField) {
-        let hasText = !(textField.text?.isEmpty ?? true)
-        createButton.isEnabled = hasText
-        createButton.backgroundColor = hasText ? .black : Colors.buttonInactive
+        updateCreateButtonState()
+    }
+    private func updateCreateButtonState() {
+        let isNameTextFieldNotEmpty = !(nameTextField.text?.isEmpty ?? true)
+        let isCategorySelected = selectedCategory != nil
+        let isEmojiSelected = selectedEmoji != nil
+        let isColorSelected = selectedColor != nil
+        
+        let shouldEnableCreateButton = isNameTextFieldNotEmpty &&
+                                       isCategorySelected &&
+                                       isEmojiSelected &&
+                                       isColorSelected
+        
+        createButton.isEnabled = shouldEnableCreateButton
+        createButton.backgroundColor = shouldEnableCreateButton ? .black : Colors.buttonInactive
     }
     
     @objc func cancelButtonTapped(){
@@ -253,6 +266,8 @@ extension NewIrregularEventViewController: UITableViewDataSource, UITableViewDel
         
         let navigationController = UINavigationController(rootViewController: categoryVC)
         present(navigationController, animated: true)
+        
+        updateCreateButtonState()
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -375,6 +390,7 @@ extension NewIrregularEventViewController: UICollectionViewDelegate {
         default:
             break
         }
+        updateCreateButtonState()
     }
 }
 
@@ -382,5 +398,6 @@ extension NewIrregularEventViewController: CategorySelectionDelegate {
     func didSelectCategory(_ category: String) {
         selectedCategory = category
         tableView.reloadData()
+        updateCreateButtonState()
     }
 }

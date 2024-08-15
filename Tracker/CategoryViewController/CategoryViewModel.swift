@@ -33,7 +33,6 @@ class CategoryViewModel {
             print("Failed to load categories: \(error)")
         }
     }
-
     
     func selectCategory(at index: Int) {
         guard index >= 0 && index < categories.count else { return }

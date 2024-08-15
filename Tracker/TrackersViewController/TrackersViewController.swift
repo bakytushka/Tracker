@@ -54,10 +54,8 @@ final class TrackersViewController: UIViewController {
         trackerCategoryStore.delegate = self
         trackerStore.delegate = self
         fetchCategory()
-        if !categories.isEmpty {
-            currentCategories = categories
-            collectionView.reloadData()
-        }
+        currentCategories = categories.filter { !$0.trackers.isEmpty }
+        collectionView.reloadData()
         updateUI()
     }
 
@@ -87,6 +85,7 @@ final class TrackersViewController: UIViewController {
     }
 
     private func updateUI() {
+        currentCategories = currentCategories.filter { !$0.trackers.isEmpty }
         if currentCategories.isEmpty {
             showStub(isSearching: isSearching)
         } else {
@@ -268,6 +267,7 @@ final class TrackersViewController: UIViewController {
             }
             return !filteredTrackers.isEmpty ? TrackerCategory(title: category.title, trackers: filteredTrackers) : nil
         }
+        currentCategories = currentCategories.filter { !$0.trackers.isEmpty }
         updateUI()
     }
     

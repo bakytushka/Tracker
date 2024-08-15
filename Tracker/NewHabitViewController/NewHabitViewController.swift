@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 
 final class NewHabitViewController: UIViewController, UITextFieldDelegate {
+    private var selectedCategory: String?
     
     weak var delegate: NewTrackerViewControllerDelegate?
     
@@ -253,7 +254,9 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
         cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         cell.setTitle(categories[indexPath.row])
         
-        if indexPath.row == 1 {
+        if indexPath.row == 0 {
+                cell.setSelectedDays(selectedCategory ?? "")
+            } else if indexPath.row == 1 {
             let selectedDaysArray = selectedDays.filter { $0.value }.map { $0.key }
             if selectedDaysArray.isEmpty {
                 cell.setSelectedDays("")
@@ -277,7 +280,9 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
         
         switch indexPath.row {
         case 0:
-            viewController = CategoryViewController()
+            let categoryVC = CategoryViewController()
+                    categoryVC.delegate = self
+                    viewController = categoryVC
             title = "Категория"
         case 1:
             let scheduleViewController = ScheduleViewController()
@@ -295,29 +300,6 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
         let navigationController = UINavigationController(rootViewController: viewController)
         self.present(navigationController, animated: true, completion: nil)
     }
-    /*       if indexPath.row == 0 {
-     let newViewController = CategoryViewController()
-     //      newViewController.delegate = self
-     
-     newViewController.navigationItem.title = "Категория"
-     navigationController?.isNavigationBarHidden = false
-     
-     let navigationController = UINavigationController(rootViewController: newViewController)
-     self.present(navigationController, animated: true, completion: nil)
-     }
-     
-     if indexPath.row == 1 {
-     let newViewController = ScheduleViewController()
-     newViewController.selectedDays = selectedDays
-     newViewController.delegate = self
-     
-     newViewController.navigationItem.title = "Расписание"
-     navigationController?.isNavigationBarHidden = false
-     
-     let navigationController = UINavigationController(rootViewController: newViewController)
-     self.present(navigationController, animated: true, completion: nil)
-     }
-     } */
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
@@ -445,6 +427,13 @@ extension NewHabitViewController: UICollectionViewDelegate {
 extension NewHabitViewController: ScheduleViewControllerDelegate {
     func didSelectDays(_ days: [WeekDay: Bool]) {
         selectedDays = days
+        tableView.reloadData()
+    }
+}
+
+extension NewHabitViewController: CategorySelectionDelegate {
+    func didSelectCategory(_ category: String) {
+        selectedCategory = category
         tableView.reloadData()
     }
 }

@@ -8,9 +8,15 @@
 import Foundation
 import UIKit
 
+protocol CategorySelectionDelegate: AnyObject {
+    func didSelectCategory(_ category: String)
+}
+
 final class CategoryViewController: UIViewController {
-    private var categories: [String] = []
-    private var tableViewHeightConstraint: NSLayoutConstraint!
+    private var categories: [TrackerCategory] = []
+    private let trackerCategoryStore = TrackerCategoryStore()
+    
+    weak var delegate: CategorySelectionDelegate?
     
     private lazy var addCategoryButton: UIButton = {
         let button = UIButton(type: .system)
@@ -19,7 +25,7 @@ final class CategoryViewController: UIViewController {
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.setTitleColor(.white, for: .normal)
         button.setTitle("Добавить категорию", for: .normal)
-        button.addTarget(self, action: #selector(addCategotyButtonTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(addCategoryButtonTapped), for: .touchUpInside)
         return button
     }()
     private let stubImageView: UIImageView = {
@@ -49,14 +55,33 @@ final class CategoryViewController: UIViewController {
         return tableView
     }()
     
+    private var tableViewHeightConstraint: NSLayoutConstraint!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         tableView.dataSource = self
         tableView.delegate = self
         setupUI()
-        updateStubViewVisibility()
-        updateTableViewHeight()
+        loadCategories()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        loadCategories()
+    }
+    
+    private func loadCategories() {
+        do {
+            categories = try trackerCategoryStore.fetchCategories().compactMap {
+                trackerCategoryStore.updateTrackerCategory($0)
+            }
+            tableView.reloadData()
+            updateStubViewVisibility()
+            updateTableViewHeight()
+        } catch {
+            print("Failed to load categories: \(error)")
+        }
     }
     
     func updateStubViewVisibility() {
@@ -64,12 +89,6 @@ final class CategoryViewController: UIViewController {
         stubImageView.isHidden = !isEmpty
         stubLabel.isHidden = !isEmpty
         tableView.isHidden = isEmpty
-    }
-    
-    func reloadData() {
-        tableView.reloadData()
-        updateStubViewVisibility()
-        updateTableViewHeight()
     }
     
     func updateTableViewHeight() {
@@ -114,7 +133,7 @@ final class CategoryViewController: UIViewController {
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 0)
     }
     
-    @objc func addCategotyButtonTapped() {
+    @objc func addCategoryButtonTapped() {
         let newViewController = NewCategoryViewController()
         newViewController.navigationItem.title = "Новая Категория"
         newViewController.delegate = self
@@ -125,17 +144,15 @@ final class CategoryViewController: UIViewController {
     }
 }
 
-extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
+extension CategoryViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categories.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        print("Создание ячейки для строки: \(indexPath.row)")
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryViewCell", for: indexPath) as? CategoryViewCell else { return UITableViewCell() }
-        
-        cell.configureCell(title: categories[indexPath.row])
-        cell.selectionStyle = .none
+        let category = categories[indexPath.row]
+        cell.textLabel?.text = category.title
         return cell
     }
     
@@ -165,9 +182,23 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
+extension CategoryViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedCategory = categories[indexPath.row]
+        delegate?.didSelectCategory(selectedCategory.title)
+        tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+        dismiss(animated: true, completion: nil)
+    }
+}
+
 extension CategoryViewController: NewCategoryViewControllerDelegate {
     func didAddCategory(name: String) {
-        categories.append(name)
-        reloadData()
+        let newCategory = TrackerCategory(title: name, trackers: [])
+        do {
+            try trackerCategoryStore.addNewCategory(newCategory)
+            loadCategories()
+        } catch {
+            print("Failed to add category: \(error)")
+        }
     }
 }

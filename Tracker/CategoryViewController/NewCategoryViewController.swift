@@ -36,14 +36,14 @@ final class NewCategoryViewController: UIViewController, UITextFieldDelegate {
         addTapGestureToHideKeyboard()
     }
     
-   private func setupCategoryTextField() {
+    private func setupCategoryTextField() {
         nameCategoryTextField.placeholder = "Введите название категории"
         nameCategoryTextField.backgroundColor = Colors.textFieldBackground
         nameCategoryTextField.layer.cornerRadius = 16
         nameCategoryTextField.textColor = .black
         nameCategoryTextField.borderStyle = .none
         nameCategoryTextField.layer.masksToBounds = true
-       nameCategoryTextField.delegate = self 
+        nameCategoryTextField.delegate = self
         
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: nameCategoryTextField.frame.height))
         nameCategoryTextField.leftView = paddingView
@@ -86,13 +86,13 @@ final class NewCategoryViewController: UIViewController, UITextFieldDelegate {
     
     @objc func doneButtonTapped() {
         guard let categoryName = nameCategoryTextField.text, !categoryName.isEmpty else { return }
-           delegate?.didAddCategory(name: categoryName)
-           dismiss(animated: true, completion: nil)
+        delegate?.didAddCategory(name: categoryName)
+        dismiss(animated: true, completion: nil)
     }
     
     @objc private func textFieldDidChange(_ textField: UITextField) {
         let isTextFieldEmpty = textField.text?.isEmpty ?? true
-            doneButton.isEnabled = !isTextFieldEmpty
+        doneButton.isEnabled = !isTextFieldEmpty
         doneButton.backgroundColor = isTextFieldEmpty ? Colors.buttonInactive : Colors.buttonActive
     }
 }

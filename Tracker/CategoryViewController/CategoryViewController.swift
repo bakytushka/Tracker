@@ -43,7 +43,7 @@ final class CategoryViewController: UIViewController {
         label.textAlignment = .center
         return label
     }()
-    
+    private let viewModel: CategoryViewModel
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.layer.cornerRadius = 16
@@ -52,16 +52,25 @@ final class CategoryViewController: UIViewController {
         tableView.isScrollEnabled = true
         tableView.allowsMultipleSelection = false
         tableView.register(CategoryViewCell.self, forCellReuseIdentifier: CategoryViewCell.reuseIdentifier)
+        tableView.dataSource = self
+        tableView.delegate = self
         return tableView
     }()
     
     private var tableViewHeightConstraint: NSLayoutConstraint!
     
+    init(viewModel: CategoryViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        tableView.dataSource = self
-        tableView.delegate = self
+        bindViewModel()
         setupUI()
         loadCategories()
     }
@@ -71,21 +80,49 @@ final class CategoryViewController: UIViewController {
         loadCategories()
     }
     
+    /*   private func loadCategories() {
+     do {
+     categories = try trackerCategoryStore.fetchCategories().compactMap {
+     trackerCategoryStore.updateTrackerCategory($0)
+     }
+     tableView.reloadData()
+     updateStubViewVisibility()
+     updateTableViewHeight()
+     } catch {
+     print("Failed to load categories: \(error)")
+     }
+     } */
+    
     private func loadCategories() {
         do {
-            categories = try trackerCategoryStore.fetchCategories().compactMap {
+            viewModel.categories = try trackerCategoryStore.fetchCategories().compactMap {
                 trackerCategoryStore.updateTrackerCategory($0)
             }
-            tableView.reloadData()
-            updateStubViewVisibility()
-            updateTableViewHeight()
+            viewModel.reloadData?(viewModel.categories)
         } catch {
             print("Failed to load categories: \(error)")
         }
     }
     
+    /*   private func loadCategories() {
+     DispatchQueue.global(qos: .background).async { [weak self] in
+     do {
+     guard let self = self else { return }
+     let fetchedCategories = try self.trackerCategoryStore.fetchCategories().compactMap {
+     self.trackerCategoryStore.updateTrackerCategory($0)
+     }
+     DispatchQueue.main.async {
+     self.viewModel.categories = fetchedCategories
+     self.viewModel.reloadData?(self.viewModel.categories)
+     }
+     } catch {
+     print("Failed to load categories: \(error)")
+     }
+     }
+     } */
+    
     func updateStubViewVisibility() {
-        let isEmpty = categories.isEmpty
+        let isEmpty = viewModel.categories.isEmpty
         stubImageView.isHidden = !isEmpty
         stubLabel.isHidden = !isEmpty
         tableView.isHidden = isEmpty
@@ -95,7 +132,7 @@ final class CategoryViewController: UIViewController {
         let cellHeight: CGFloat = 75.0
         let maxHeight = view.frame.height - addCategoryButton.frame.height - 32 - 24 - cellHeight
         let maxRows = Int(maxHeight / cellHeight)
-        let visibleRows = min(categories.count, maxRows)
+        let visibleRows = min(viewModel.categories.count, maxRows)
         tableViewHeightConstraint.constant = CGFloat(visibleRows) * cellHeight
         view.layoutIfNeeded()
     }
@@ -142,16 +179,28 @@ final class CategoryViewController: UIViewController {
         let navigationController = UINavigationController(rootViewController: newViewController)
         self.present(navigationController, animated: true, completion: nil)
     }
+ 
+    private func bindViewModel() {
+        viewModel.reloadData = { [weak self] categories in
+            self?.tableView.reloadData()
+            self?.updateStubViewVisibility()
+            self?.updateTableViewHeight()
+        }
+        viewModel.didSelectCategory = { [weak self] category in
+            self?.delegate?.didSelectCategory(category.title)
+            self?.dismiss(animated: true, completion: nil)
+        }
+    }
 }
 
 extension CategoryViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories.count
+        return viewModel.categories.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryViewCell", for: indexPath) as? CategoryViewCell else { return UITableViewCell() }
-        let category = categories[indexPath.row]
+        let category = viewModel.categories[indexPath.row]
         cell.textLabel?.text = category.title
         return cell
     }
@@ -163,7 +212,7 @@ extension CategoryViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let separatorTag = 1001
         if let separatorView = cell.contentView.viewWithTag(separatorTag) {
-            separatorView.isHidden = indexPath.row >= categories.count - 1
+            separatorView.isHidden = indexPath.row >= viewModel.categories.count - 1
         } else {
             let separatorView = UIView()
             separatorView.backgroundColor = UIColor.separator
@@ -177,14 +226,14 @@ extension CategoryViewController: UITableViewDataSource {
                 separatorView.heightAnchor.constraint(equalToConstant: 0.5),
                 separatorView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor)
             ])
-            separatorView.isHidden = indexPath.row >= categories.count - 1
+            separatorView.isHidden = indexPath.row >= viewModel.categories.count - 1
         }
     }
 }
 
 extension CategoryViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedCategory = categories[indexPath.row]
+        let selectedCategory = viewModel.categories[indexPath.row]
         delegate?.didSelectCategory(selectedCategory.title)
         tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
         dismiss(animated: true, completion: nil)

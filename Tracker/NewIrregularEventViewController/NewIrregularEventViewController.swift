@@ -260,7 +260,10 @@ extension NewIrregularEventViewController: UITableViewDataSource, UITableViewDel
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let categoryVC = CategoryViewController()
+  //      let categoryVC = CategoryViewController()
+        let trackerCategoryStore = TrackerCategoryStore()
+        let categoryViewModel = CategoryViewModel(categoryStore: trackerCategoryStore)
+        let categoryVC = CategoryViewController(viewModel: categoryViewModel)
         categoryVC.navigationItem.title = "Категория"
         categoryVC.delegate = self
         

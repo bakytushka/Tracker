@@ -222,7 +222,8 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
             emoji: selectedEmoji ?? Constant.randomEmoji(),
             schedule: allWeekDays
         )
-        delegate?.didCreateNewTracker(newTracker)
+        let newCategory = TrackerCategory(title: selectedCategory ?? "", trackers: [newTracker])
+        delegate?.didCreateNewTracker(newTracker, newCategory)
         if let window = UIApplication.shared.windows.first {
             window.rootViewController?.dismiss(animated: true, completion: nil)
         }

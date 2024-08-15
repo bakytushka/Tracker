@@ -235,7 +235,8 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
             emoji: selectedEmoji ?? Constant.randomEmoji(),
             schedule: newTrackerSchedule
         )
-        delegate?.didCreateNewTracker(newTracker)
+        let newCategory = TrackerCategory(title: selectedCategory ?? "", trackers: [newTracker])
+        delegate?.didCreateNewTracker(newTracker, newCategory)
         if let window = UIApplication.shared.windows.first {
             window.rootViewController?.dismiss(animated: true, completion: nil)
         }
@@ -281,6 +282,7 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
         switch indexPath.row {
         case 0:
             let categoryVC = CategoryViewController()
+   //         categoryVC.selectedCategory = selectedCategory
                     categoryVC.delegate = self
                     viewController = categoryVC
             title = "Категория"

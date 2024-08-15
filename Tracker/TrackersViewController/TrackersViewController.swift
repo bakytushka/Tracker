@@ -175,8 +175,8 @@ final class TrackersViewController: UIViewController {
         ])
     }
     
-    func addTracker(_ tracker: Tracker, to categoryIndex: Int) {
-        do {
+  /*  func addTracker(_ tracker: Tracker, to categoryIndex: Int) {
+       do {
             var newCategories = categories
             if categoryIndex < newCategories.count {
                 let categoryToUpdate = newCategories[categoryIndex]
@@ -202,6 +202,52 @@ final class TrackersViewController: UIViewController {
             }
             
             createCategoryAndTracker(tracker: tracker, with: "Новая категория")
+            fetchCategory()
+            collectionView.reloadData()
+            updateUI()
+        } catch {
+            print("Error: \(error)")
+        }
+    }
+   */
+    
+    
+    func addTracker(_ tracker: Tracker, to category: TrackerCategory) {
+        do {
+            // Получаем текущие категории
+            var newCategories = currentCategories
+            
+            // Проверяем, существует ли уже переданная категория
+            if let categoryIndex = newCategories.firstIndex(where: { $0.title == category.title }) {
+                // Обновляем существующую категорию, добавляя в неё новый трекер
+                var updatedTrackers = newCategories[categoryIndex].trackers
+                updatedTrackers.append(tracker)
+                let updatedCategory = TrackerCategory(
+                    title: category.title,
+                    trackers: updatedTrackers
+                )
+                newCategories[categoryIndex] = updatedCategory
+            } else {
+                // Создаем новую категорию, если она не существует
+                let newCategory = TrackerCategory(
+                    title: category.title,
+                    trackers: [tracker]
+                )
+                newCategories.append(newCategory)
+                
+                // Если в Core Data нет категории с таким названием, добавляем её
+                if try trackerCategoryStore.fetchCategories().filter({ $0.title == category.title }).isEmpty {
+                    try trackerCategoryStore.addNewCategory(newCategory)
+                }
+            }
+            
+            // Обновляем текущие категории
+            currentCategories = newCategories
+            
+            // Добавляем трекер в Core Data в новую или существующую категорию
+            createCategoryAndTracker(tracker: tracker, with: category.title)
+            
+            // Обновляем интерфейс
             fetchCategory()
             collectionView.reloadData()
             updateUI()
@@ -403,8 +449,8 @@ extension TrackersViewController: NewTrackerViewControllerDelegate {
         return dateFormatter.string(from: currentDate)
     }
     
-    func didCreateNewTracker(_ tracker: Tracker) {
-        addTracker(tracker, to: 0)
+    func didCreateNewTracker(_ tracker: Tracker, _ category: TrackerCategory) {
+        addTracker(tracker, to: category)
     }
 }
 

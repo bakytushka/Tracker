@@ -297,8 +297,8 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
         case 0:
             let trackerCategoryStore = TrackerCategoryStore()
             let categoryViewModel = CategoryViewModel(categoryStore: trackerCategoryStore)
+            categoryViewModel.delegate = self 
             let categoryVC = CategoryViewController(viewModel: categoryViewModel)
-            categoryVC.delegate = self
             viewController = categoryVC
             title = "Категория"
         case 1:

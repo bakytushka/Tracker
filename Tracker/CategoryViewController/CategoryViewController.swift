@@ -6,14 +6,9 @@
 //
 import UIKit
 
-protocol CategorySelectionDelegate: AnyObject {
-    func didSelectCategory(_ category: String)
-}
-
 final class CategoryViewController: UIViewController {
     private var viewModel: CategoryViewModelProtocol
     private var tableViewHeightConstraint: NSLayoutConstraint?
-    weak var delegate: CategorySelectionDelegate?
     
     private lazy var addCategoryButton: UIButton = {
         let button = UIButton(type: .system)
@@ -142,7 +137,6 @@ final class CategoryViewController: UIViewController {
             self?.updateTableViewHeight()
         }
         viewModel.didSelectCategory = { [weak self] category in
-            self?.delegate?.didSelectCategory(category.title)
             self?.dismiss(animated: true, completion: nil)
         }
     }

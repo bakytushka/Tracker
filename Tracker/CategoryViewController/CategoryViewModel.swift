@@ -8,6 +8,10 @@ import Foundation
 
 typealias Binding<T> = (T) -> Void
 
+protocol CategorySelectionDelegate: AnyObject {
+    func didSelectCategory(_ category: String)
+}
+
 protocol CategoryViewModelProtocol {
     var categories: [TrackerCategory] { get }
     var reloadData: Binding<[TrackerCategory]>? { get set }
@@ -19,8 +23,9 @@ protocol CategoryViewModelProtocol {
 }
 
 class CategoryViewModel: CategoryViewModelProtocol {
-    private let categoryStore: TrackerCategoryStore
+    weak var delegate: CategorySelectionDelegate?
     
+    private let categoryStore: TrackerCategoryStore
     private(set) var categories: [TrackerCategory] = [] {
         didSet {
             reloadData?(categories)
@@ -48,6 +53,7 @@ class CategoryViewModel: CategoryViewModelProtocol {
         guard index >= 0 && index < categories.count else { return }
         let category = categories[index]
         didSelectCategory?(category)
+        delegate?.didSelectCategory(category.title)
     }
     
     func addNewCategory(with name: String) {

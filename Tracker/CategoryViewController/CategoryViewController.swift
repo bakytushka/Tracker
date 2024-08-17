@@ -4,8 +4,6 @@
 //
 //  Created by Bakyt Temishov on 14.08.2024.
 //
-
-import Foundation
 import UIKit
 
 protocol CategorySelectionDelegate: AnyObject {
@@ -13,9 +11,8 @@ protocol CategorySelectionDelegate: AnyObject {
 }
 
 final class CategoryViewController: UIViewController {
-    private var categories: [TrackerCategory] = []
-    private let trackerCategoryStore = TrackerCategoryStore()
-    
+    private var viewModel: CategoryViewModelProtocol
+    private var tableViewHeightConstraint: NSLayoutConstraint?
     weak var delegate: CategorySelectionDelegate?
     
     private lazy var addCategoryButton: UIButton = {
@@ -28,6 +25,7 @@ final class CategoryViewController: UIViewController {
         button.addTarget(self, action: #selector(addCategoryButtonTapped), for: .touchUpInside)
         return button
     }()
+    
     private let stubImageView: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "stub")
@@ -43,7 +41,7 @@ final class CategoryViewController: UIViewController {
         label.textAlignment = .center
         return label
     }()
-    private let viewModel: CategoryViewModel
+    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.layer.cornerRadius = 16
@@ -56,8 +54,6 @@ final class CategoryViewController: UIViewController {
         tableView.delegate = self
         return tableView
     }()
-    
-    private var tableViewHeightConstraint: NSLayoutConstraint!
     
     init(viewModel: CategoryViewModel) {
         self.viewModel = viewModel
@@ -72,23 +68,12 @@ final class CategoryViewController: UIViewController {
         super.viewDidLoad()
         bindViewModel()
         setupUI()
-        loadCategories()
+        viewModel.loadCategories()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadCategories()
-    }
-    
-    private func loadCategories() {
-        do {
-            viewModel.categories = try trackerCategoryStore.fetchCategories().compactMap {
-                trackerCategoryStore.updateTrackerCategory($0)
-            }
-            viewModel.reloadData?(viewModel.categories)
-        } catch {
-            print("Failed to load categories: \(error)")
-        }
+        viewModel.loadCategories()
     }
     
     func updateStubViewVisibility() {
@@ -103,7 +88,7 @@ final class CategoryViewController: UIViewController {
         let maxHeight = view.frame.height - addCategoryButton.frame.height - 32 - 24 - cellHeight
         let maxRows = Int(maxHeight / cellHeight)
         let visibleRows = min(viewModel.categories.count, maxRows)
-        tableViewHeightConstraint.constant = CGFloat(visibleRows) * cellHeight
+        tableViewHeightConstraint?.constant = CGFloat(visibleRows) * cellHeight
         view.layoutIfNeeded()
     }
     
@@ -136,18 +121,18 @@ final class CategoryViewController: UIViewController {
         ])
         
         tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: 0)
-        tableViewHeightConstraint.isActive = true
+        tableViewHeightConstraint?.isActive = true
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 0)
     }
     
-    @objc func addCategoryButtonTapped() {
+    @objc private func addCategoryButtonTapped() {
         let newViewController = NewCategoryViewController()
         newViewController.navigationItem.title = "Новая Категория"
         newViewController.delegate = self
         navigationController?.isNavigationBarHidden = false
         
         let navigationController = UINavigationController(rootViewController: newViewController)
-        self.present(navigationController, animated: true, completion: nil)
+        present(navigationController, animated: true, completion: nil)
     }
     
     private func bindViewModel() {
@@ -203,21 +188,13 @@ extension CategoryViewController: UITableViewDataSource {
 
 extension CategoryViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedCategory = viewModel.categories[indexPath.row]
-        delegate?.didSelectCategory(selectedCategory.title)
+        viewModel.selectCategory(at: indexPath.row)
         tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        dismiss(animated: true, completion: nil)
     }
 }
 
 extension CategoryViewController: NewCategoryViewControllerDelegate {
     func didAddCategory(name: String) {
-        let newCategory = TrackerCategory(title: name, trackers: [])
-        do {
-            try trackerCategoryStore.addNewCategory(newCategory)
-            loadCategories()
-        } catch {
-            print("Failed to add category: \(error)")
-        }
+        viewModel.addNewCategory(with: name)
     }
 }

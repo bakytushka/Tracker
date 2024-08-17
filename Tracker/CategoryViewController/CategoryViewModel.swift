@@ -4,14 +4,24 @@
 //
 //  Created by Bakyt Temishov on 15.08.2024.
 //
-
 import Foundation
 
 typealias Binding<T> = (T) -> Void
 
-class CategoryViewModel {
+protocol CategoryViewModelProtocol {
+    var categories: [TrackerCategory] { get }
+    var reloadData: Binding<[TrackerCategory]>? { get set }
+    var didSelectCategory: Binding<TrackerCategory>? { get set }
+ 
+    func loadCategories()
+    func selectCategory(at index: Int)
+    func addNewCategory(with name: String)
+}
+
+class CategoryViewModel: CategoryViewModelProtocol {
     private let categoryStore: TrackerCategoryStore
-    var categories: [TrackerCategory] = [] {
+    
+    private(set) var categories: [TrackerCategory] = [] {
         didSet {
             reloadData?(categories)
         }

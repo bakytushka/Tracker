@@ -12,7 +12,7 @@ protocol CategoryViewModelProtocol {
     var categories: [TrackerCategory] { get }
     var reloadData: Binding<[TrackerCategory]>? { get set }
     var didSelectCategory: Binding<TrackerCategory>? { get set }
- 
+    
     func loadCategories()
     func selectCategory(at index: Int)
     func addNewCategory(with name: String)

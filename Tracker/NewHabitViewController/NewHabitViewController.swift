@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 
 final class NewHabitViewController: UIViewController, UITextFieldDelegate {
+    private var selectedCategory: String?
     
     weak var delegate: NewTrackerViewControllerDelegate?
     
@@ -41,6 +42,7 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
         view.backgroundColor = .white
         setupUI()
         addTapGestureToHideKeyboard()
+        updateCreateButtonState()
     }
     
     private func setupUI() {
@@ -157,7 +159,6 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
             nameTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
             nameTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
-            nameTextField.widthAnchor.constraint(equalToConstant: 343),
             
             tableView.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
@@ -203,9 +204,23 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc private func textFieldDidChange(_ textField: UITextField) {
-        let hasText = !(textField.text?.isEmpty ?? true)
-        createButton.isEnabled = hasText
-        createButton.backgroundColor = hasText ? .black : Colors.buttonInactive
+        updateCreateButtonState()
+    }
+    private func updateCreateButtonState() {
+        let isNameTextFieldNotEmpty = !(nameTextField.text?.isEmpty ?? true)
+        let isCategorySelected = selectedCategory != nil
+        let isScheduleSelected = !selectedDays.isEmpty && selectedDays.values.contains(true)
+        let isEmojiSelected = selectedEmoji != nil
+        let isColorSelected = selectedColor != nil
+        
+        let shouldEnableCreateButton = isNameTextFieldNotEmpty &&
+        isCategorySelected &&
+        isScheduleSelected &&
+        isEmojiSelected &&
+        isColorSelected
+        
+        createButton.isEnabled = shouldEnableCreateButton
+        createButton.backgroundColor = shouldEnableCreateButton ? .black : Colors.buttonInactive
     }
     
     @objc func cancelButtonTapped(){
@@ -234,7 +249,8 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
             emoji: selectedEmoji ?? Constant.randomEmoji(),
             schedule: newTrackerSchedule
         )
-        delegate?.didCreateNewTracker(newTracker)
+        let newCategory = TrackerCategory(title: selectedCategory ?? "", trackers: [newTracker])
+        delegate?.didCreateNewTracker(newTracker, newCategory)
         if let window = UIApplication.shared.windows.first {
             window.rootViewController?.dismiss(animated: true, completion: nil)
         }
@@ -253,7 +269,9 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
         cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         cell.setTitle(categories[indexPath.row])
         
-        if indexPath.row == 1 {
+        if indexPath.row == 0 {
+            cell.setSelectedDays(selectedCategory ?? "")
+        } else if indexPath.row == 1 {
             let selectedDaysArray = selectedDays.filter { $0.value }.map { $0.key }
             if selectedDaysArray.isEmpty {
                 cell.setSelectedDays("")
@@ -272,17 +290,34 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if indexPath.row == 1 {
-            let newViewController = ScheduleViewController()
-            newViewController.selectedDays = selectedDays
-            newViewController.delegate = self
-            
-            newViewController.navigationItem.title = "Расписание"
-            navigationController?.isNavigationBarHidden = false
-            
-            let navigationController = UINavigationController(rootViewController: newViewController)
-            self.present(navigationController, animated: true, completion: nil)
+        let viewController: UIViewController
+        let title: String
+        
+        switch indexPath.row {
+        case 0:
+            let trackerCategoryStore = TrackerCategoryStore()
+            let categoryViewModel = CategoryViewModel(categoryStore: trackerCategoryStore)
+            categoryViewModel.delegate = self 
+            let categoryVC = CategoryViewController(viewModel: categoryViewModel)
+            viewController = categoryVC
+            title = "Категория"
+        case 1:
+            let scheduleViewController = ScheduleViewController()
+            scheduleViewController.selectedDays = selectedDays
+            scheduleViewController.delegate = self
+            viewController = scheduleViewController
+            title = "Расписание"
+        default:
+            return
         }
+        
+        viewController.navigationItem.title = title
+        navigationController?.isNavigationBarHidden = false
+        
+        let navigationController = UINavigationController(rootViewController: viewController)
+        self.present(navigationController, animated: true, completion: nil)
+        
+        updateCreateButtonState()
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -405,6 +440,7 @@ extension NewHabitViewController: UICollectionViewDelegate {
         default:
             break
         }
+        updateCreateButtonState()
     }
 }
 
@@ -412,5 +448,14 @@ extension NewHabitViewController: ScheduleViewControllerDelegate {
     func didSelectDays(_ days: [WeekDay: Bool]) {
         selectedDays = days
         tableView.reloadData()
+        updateCreateButtonState()
+    }
+}
+
+extension NewHabitViewController: CategorySelectionDelegate {
+    func didSelectCategory(_ category: String) {
+        selectedCategory = category
+        tableView.reloadData()
+        updateCreateButtonState()
     }
 }

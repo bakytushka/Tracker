@@ -9,6 +9,8 @@ import Foundation
 import UIKit
 
 final class NewIrregularEventViewController: UIViewController, UITextFieldDelegate {
+    private var selectedCategory: String?
+    
     private let nameTextField = UITextField()
     private let maxLength = 38
     
@@ -36,6 +38,7 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
         view.backgroundColor = .white
         setupUI()
         addTapGestureToHideKeyboard()
+        updateCreateButtonState()
     }
     
     private func setupUI(){
@@ -200,9 +203,21 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
     }
     
     @objc private func textFieldDidChange(_ textField: UITextField) {
-        let hasText = !(textField.text?.isEmpty ?? true)
-        createButton.isEnabled = hasText
-        createButton.backgroundColor = hasText ? .black : Colors.buttonInactive
+        updateCreateButtonState()
+    }
+    private func updateCreateButtonState() {
+        let isNameTextFieldNotEmpty = !(nameTextField.text?.isEmpty ?? true)
+        let isCategorySelected = selectedCategory != nil
+        let isEmojiSelected = selectedEmoji != nil
+        let isColorSelected = selectedColor != nil
+        
+        let shouldEnableCreateButton = isNameTextFieldNotEmpty &&
+        isCategorySelected &&
+        isEmojiSelected &&
+        isColorSelected
+        
+        createButton.isEnabled = shouldEnableCreateButton
+        createButton.backgroundColor = shouldEnableCreateButton ? .black : Colors.buttonInactive
     }
     
     @objc func cancelButtonTapped(){
@@ -220,7 +235,8 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
             emoji: selectedEmoji ?? Constant.randomEmoji(),
             schedule: allWeekDays
         )
-        delegate?.didCreateNewTracker(newTracker)
+        let newCategory = TrackerCategory(title: selectedCategory ?? "", trackers: [newTracker])
+        delegate?.didCreateNewTracker(newTracker, newCategory)
         if let window = UIApplication.shared.windows.first {
             window.rootViewController?.dismiss(animated: true, completion: nil)
         }
@@ -238,11 +254,23 @@ extension NewIrregularEventViewController: UITableViewDataSource, UITableViewDel
         }
         cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         cell.setTitle(categories[indexPath.row])
+        cell.setSelectedDays(selectedCategory ?? "")
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        let trackerCategoryStore = TrackerCategoryStore()
+        let categoryViewModel = CategoryViewModel(categoryStore: trackerCategoryStore)
+        categoryViewModel.delegate = self
+        
+        let categoryVC = CategoryViewController(viewModel: categoryViewModel)
+        categoryVC.navigationItem.title = "Категория"
+        
+        let navigationController = UINavigationController(rootViewController: categoryVC)
+        present(navigationController, animated: true)
+        
+        updateCreateButtonState()
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -365,5 +393,14 @@ extension NewIrregularEventViewController: UICollectionViewDelegate {
         default:
             break
         }
+        updateCreateButtonState()
+    }
+}
+
+extension NewIrregularEventViewController: CategorySelectionDelegate {
+    func didSelectCategory(_ category: String) {
+        selectedCategory = category
+        tableView.reloadData()
+        updateCreateButtonState()
     }
 }

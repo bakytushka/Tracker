@@ -54,13 +54,11 @@ final class TrackersViewController: UIViewController {
         trackerCategoryStore.delegate = self
         trackerStore.delegate = self
         fetchCategory()
-        if !categories.isEmpty {
-            currentCategories = categories
-            collectionView.reloadData()
-        }
+        currentCategories = categories.filter { !$0.trackers.isEmpty }
+        collectionView.reloadData()
         updateUI()
     }
-
+    
     private func loadCompletedTrackers() {
         do {
             completedTrackers = try trackerRecordStore.fetchTrackerRecords()
@@ -69,7 +67,7 @@ final class TrackersViewController: UIViewController {
             print("Error loading completed trackers: \(error)")
         }
     }
-
+    
     private func saveCompletedTracker(_ trackerRecord: TrackerRecord) {
         do {
             try trackerRecordStore.addTrackerRecord(from: trackerRecord)
@@ -77,7 +75,7 @@ final class TrackersViewController: UIViewController {
             print("Error saving completed tracker: \(error)")
         }
     }
-
+    
     private func removeCompletedTracker(_ trackerRecord: TrackerRecord) {
         do {
             try trackerRecordStore.deleteTrackerRecord(trackerRecord: trackerRecord)
@@ -85,8 +83,9 @@ final class TrackersViewController: UIViewController {
             print("Error removing completed tracker: \(error)")
         }
     }
-
+    
     private func updateUI() {
+        currentCategories = currentCategories.filter { !$0.trackers.isEmpty }
         if currentCategories.isEmpty {
             showStub(isSearching: isSearching)
         } else {
@@ -175,33 +174,30 @@ final class TrackersViewController: UIViewController {
         ])
     }
     
-    func addTracker(_ tracker: Tracker, to categoryIndex: Int) {
+    func addTracker(_ tracker: Tracker, to category: TrackerCategory) {
         do {
-            var newCategories = categories
-            if categoryIndex < newCategories.count {
-                let categoryToUpdate = newCategories[categoryIndex]
-                var updatedTrackers = categoryToUpdate.trackers
+            var newCategories = currentCategories
+            if let categoryIndex = newCategories.firstIndex(where: { $0.title == category.title }) {
+                var updatedTrackers = newCategories[categoryIndex].trackers
                 updatedTrackers.append(tracker)
                 let updatedCategory = TrackerCategory(
-                    title: categoryToUpdate.title,
+                    title: category.title,
                     trackers: updatedTrackers
                 )
                 newCategories[categoryIndex] = updatedCategory
             } else {
                 let newCategory = TrackerCategory(
-                    title: "Новая категория",
+                    title: category.title,
                     trackers: [tracker]
                 )
                 newCategories.append(newCategory)
+                if try trackerCategoryStore.fetchCategories().filter({ $0.title == category.title }).isEmpty {
+                    try trackerCategoryStore.addNewCategory(newCategory)
+                }
             }
             
             currentCategories = newCategories
-            if try trackerCategoryStore.fetchCategories().filter({ $0.title == "Новая категория" }).isEmpty {
-                let newCategoryCoreData = TrackerCategory(title: "Новая категория", trackers: [])
-                try trackerCategoryStore.addNewCategory(newCategoryCoreData)
-            }
-            
-            createCategoryAndTracker(tracker: tracker, with: "Новая категория")
+            createCategoryAndTracker(tracker: tracker, with: category.title)
             fetchCategory()
             collectionView.reloadData()
             updateUI()
@@ -222,6 +218,7 @@ final class TrackersViewController: UIViewController {
             }
             return !filteredTrackers.isEmpty ? TrackerCategory(title: category.title, trackers: filteredTrackers) : nil
         }
+        currentCategories = currentCategories.filter { !$0.trackers.isEmpty }
         updateUI()
     }
     
@@ -250,7 +247,7 @@ extension TrackersViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return currentCategories[section].trackers.count  //categories[section].trackers.count
+        return currentCategories[section].trackers.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -403,8 +400,8 @@ extension TrackersViewController: NewTrackerViewControllerDelegate {
         return dateFormatter.string(from: currentDate)
     }
     
-    func didCreateNewTracker(_ tracker: Tracker) {
-        addTracker(tracker, to: 0)
+    func didCreateNewTracker(_ tracker: Tracker, _ category: TrackerCategory) {
+        addTracker(tracker, to: category)
     }
 }
 

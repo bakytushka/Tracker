@@ -8,10 +8,9 @@
 import Foundation
 import  UIKit
 
-
 protocol NewTrackerViewControllerDelegate: AnyObject {
     func setDateForNewTracker() -> String
-    func didCreateNewTracker(_ tracker: Tracker)
+    func didCreateNewTracker(_ tracker: Tracker, _ category: TrackerCategory)
 }
 
 final class NewTrackersViewController: UIViewController {

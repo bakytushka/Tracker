@@ -39,8 +39,7 @@ final class TrackersViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = UIColor(named: "BackgroundColor")
         setupNaviBar()
         setupTrackersCollectionView()
         setupStubImage()
@@ -48,6 +47,14 @@ final class TrackersViewController: UIViewController {
         syncData()
         updateUI()
         loadCompletedTrackers()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            collectionView.backgroundColor = UIColor(named: "BackgroundColor")
+        }
     }
     
     private func syncData() {
@@ -116,6 +123,7 @@ final class TrackersViewController: UIViewController {
         
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
+        collectionView.backgroundColor = UIColor(named: "BackgroundColor")
         
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -135,7 +143,7 @@ final class TrackersViewController: UIViewController {
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTrackerButton))
-        navigationItem.leftBarButtonItem?.tintColor = .black
+        navigationItem.leftBarButtonItem?.tintColor = UIColor.label
         
         let currentDate = Date()
         let calendar = Calendar.current
@@ -147,6 +155,20 @@ final class TrackersViewController: UIViewController {
         datePicker.preferredDatePickerStyle = .compact
         datePicker.datePickerMode = .date
         datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
+        
+        setupDatePickerAppearance(datePicker)
+    }
+    
+    private func setupDatePickerAppearance(_ datePicker: UIDatePicker) {
+        datePicker.overrideUserInterfaceStyle = .light
+        datePicker.backgroundColor = UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
+        datePicker.layer.cornerRadius = 8
+        datePicker.layer.masksToBounds = true
+
+        let textFieldInsideDatePicker = (
+            datePicker.subviews[0].subviews[0].subviews[0] as? UITextField
+        )
+        textFieldInsideDatePicker?.textColor = UIColor.black
     }
     
     private func setupStubImage() {

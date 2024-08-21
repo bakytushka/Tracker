@@ -38,6 +38,7 @@ final class TrackersViewCell: UICollectionViewCell {
         setupCompletionButton()
         setupCounterOfDaysLabel()
         setupConstraints()
+        updateCompletionButtonColor()
     }
     
     private func setupConstraints() {
@@ -125,6 +126,7 @@ final class TrackersViewCell: UICollectionViewCell {
         
         counterOfDaysLabel.text = setupCounterOfDaysLabelText(completedDays)
         setupCompletionButton(with: tracker)
+        updateCompletionButtonColor()
     }
     
     private func setupCounterOfDaysLabelText(_ count: Int) -> String {
@@ -160,6 +162,18 @@ final class TrackersViewCell: UICollectionViewCell {
             break
         }
     }
+    
+    private func updateCompletionButtonColor() {
+            let darkModeColor = UIColor(red: 26/255.0, green: 27/255.0, blue: 34/255.0, alpha: 1.0)
+            let lightModeColor = UIColor.white
+            
+        completionButton.tintColor = UITraitCollection.current.userInterfaceStyle == .dark ? darkModeColor : lightModeColor
+        }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+            super.traitCollectionDidChange(previousTraitCollection)
+            updateCompletionButtonColor()
+        }
     
     @objc private func didTapCompletionButton() {
         guard let trackerId = trackerId, let indexPath = indexPath else {

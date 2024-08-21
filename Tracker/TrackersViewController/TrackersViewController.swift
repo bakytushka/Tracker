@@ -49,6 +49,16 @@ final class TrackersViewController: UIViewController {
         loadCompletedTrackers()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        AnalyticsService.shared.logEvent("open")
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        AnalyticsService.shared.logEvent("close")
+    }
+    
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
@@ -253,6 +263,7 @@ final class TrackersViewController: UIViewController {
     
     @objc
     private func addTrackerButton() {
+        AnalyticsService.shared.logEvent("click", item: "add_track")
         let newViewController = NewTrackersViewController()
         newViewController.delegate = self
         newViewController.navigationItem.title = "Создание трекера"
@@ -464,3 +475,21 @@ extension TrackersViewController {
         trackerCategoryStore.createCategoryAndTracker(tracker: tracker, with: titleCategory)
     }
 }
+
+/*import YandexMobileMetrica
+
+extension TrackersViewController {
+    private func logEvent(_ event: String, item: String? = nil) {
+        var parameters: [String: Any] = [
+            "event": event,
+            "screen": "Main"
+        ]
+        if let item = item {
+            parameters["item"] = item
+        }
+        YMMYandexMetrica.reportEvent("ui_event", parameters: parameters, onFailure: { error in
+            print("Failed to report event: \(error.localizedDescription)")
+        })
+        
+        print("Event reported: \(parameters)")
+    }*/

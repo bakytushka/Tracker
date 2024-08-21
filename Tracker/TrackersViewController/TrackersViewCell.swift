@@ -176,6 +176,7 @@ final class TrackersViewCell: UICollectionViewCell {
         }
     
     @objc private func didTapCompletionButton() {
+        AnalyticsService.shared.logEvent("click", item: "track")
         guard let trackerId = trackerId, let indexPath = indexPath else {
             assertionFailure("no trackerId and indexPath")
             return

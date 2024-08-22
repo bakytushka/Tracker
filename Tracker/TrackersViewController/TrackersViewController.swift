@@ -23,6 +23,7 @@ final class TrackersViewController: UIViewController {
     private var categories: [TrackerCategory] = []
     private var completedTrackers: Set<TrackerRecord> = []
     private var currentCategories: [TrackerCategory] = []
+ //   private var originalCategories: [UUID: String] = [:]
     
     private let collectionView = UICollectionView(
         frame: .zero,
@@ -36,6 +37,18 @@ final class TrackersViewController: UIViewController {
     var currentDate: Date = Date()
     let datePicker = UIDatePicker()
     private var selectedWeekDay: WeekDay = .monday
+    
+/*    private let filterButton: UIButton = {
+        let button = UIButton()
+        button.setTitle(NSLocalizedString("Filters", comment: "Title for the filter button"), for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
+        button.backgroundColor = UIColor(red: 55/255, green: 114/255, blue: 231/255, alpha: 1.0)
+        button.layer.cornerRadius = 16
+        button.layer.masksToBounds = true
+        button.addTarget(TrackersViewController.self, action: #selector(filterButtonTapped), for: .touchUpInside)
+        return button
+    }() */
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -128,6 +141,8 @@ final class TrackersViewController: UIViewController {
     private func setupTrackersCollectionView() {
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
+//        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
+ //       collectionView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
         collectionView.register(TrackersViewCell.self, forCellWithReuseIdentifier: "TrackerCell")
         collectionView.register(HeaderViewController.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HeaderViewController.reuseIdentifier)
         
@@ -259,6 +274,11 @@ final class TrackersViewController: UIViewController {
         isSearching = false
         filteredTrackers()
         updateUI()
+    }
+    
+    @objc
+    private func filterButtonTapped() {
+        
     }
     
     @objc
@@ -428,6 +448,288 @@ extension TrackersViewController: TrackerViewCellDelegate {
     }
 }
 
+    
+    
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   /*
+    func isTrackerPinned(at indexPath: IndexPath) -> Bool {
+        return currentCategories[indexPath.section].title == "Закрепленные"
+    }
+    
+    
+    func unpinTracker(at indexPath: IndexPath) {
+        let tracker = currentCategories[indexPath.section].trackers[indexPath.row]
+        try? trackerCategoryStore.deleteTrackerFromCategory(tracker: tracker, from: "Закрепленные")
+        if let originalCategory = originalCategories[tracker.id] {
+            try? trackerCategoryStore.addNewTrackerToCategory(tracker, to: originalCategory)
+            originalCategories.removeValue(forKey: tracker.id)
+        }
+        
+        fetchCategory()
+        collectionView.reloadData()
+        updateUI()
+    }
+    
+    func pinTracker(at indexPath: IndexPath) {
+       let tracker = currentCategories[indexPath.section].trackers[indexPath.row]
+        let currentCategory = currentCategories[indexPath.section].title
+        
+        if currentCategory == "Закрепленные" {
+            unpinTracker(at: indexPath)
+        } else {
+            pinTracker(tracker, from: currentCategory)
+        }
+ 
+    }
+    
+    private func pinTracker(_ tracker: Tracker, from category: String) {
+        try? trackerCategoryStore.deleteTrackerFromCategory(tracker: tracker, from: category)
+        originalCategories[tracker.id] = category
+        try? trackerCategoryStore.addNewTrackerToCategory(tracker, to: "Закрепленные")
+        
+        fetchCategory()
+        collectionView.reloadData()
+        updateUI()
+    } */
+    
+    
+    
+    
+ /*   func isTrackerPinned(at indexPath: IndexPath) -> Bool {
+            // Проверяем, находится ли привычка в категории "Закрепленные"
+            return currentCategories[indexPath.section].title == "Закрепленные"
+        }
+        
+        func pinTracker(at indexPath: IndexPath) {
+            let tracker = currentCategories[indexPath.section].trackers[indexPath.row]
+            let currentCategory = currentCategories[indexPath.section].title
+            
+            if currentCategory == "Закрепленные" {
+                // Если привычка уже закреплена, ничего не делаем
+                return
+            }
+            
+            // Удаляем привычку из текущей категории и добавляем в "Закрепленные"
+            try? trackerCategoryStore.deleteTrackerFromCategory(tracker: tracker, from: currentCategory)
+            originalCategories[tracker.id] = currentCategory
+            try? trackerCategoryStore.addNewTrackerToCategory(tracker, to: "Закрепленные")
+            
+            fetchCategory()
+            collectionView.reloadData()
+            updateUI()
+        }
+        
+        func unpinTracker(at indexPath: IndexPath) {
+            let tracker = currentCategories[indexPath.section].trackers[indexPath.row]
+            
+            if let originalCategory = originalCategories[tracker.id] {
+                // Удаляем привычку из категории "Закрепленные" и возвращаем в исходную категорию
+                try? trackerCategoryStore.deleteTrackerFromCategory(tracker: tracker, from: "Закрепленные")
+                try? trackerCategoryStore.addNewTrackerToCategory(tracker, to: originalCategory)
+                originalCategories.removeValue(forKey: tracker.id)
+            }
+            
+            fetchCategory()
+            collectionView.reloadData()
+            updateUI()
+        } */
+    
+    
+    
+    
+ /*   func deleteTracker(at indexPath: IndexPath) {
+        let alert = UIAlertController(
+            title: "",
+            message: "Уверены, что хотите удалить трекер?",
+            preferredStyle: .actionSheet)
+        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) {
+            [weak self] _ in
+            guard let self = self else { return }
+            let tracker = currentCategories[indexPath.section].trackers[indexPath.row]
+            trackerStore.deleteTracker(tracker: tracker)
+        }
+        let cancelAction = UIAlertAction(title: "Отменить", style: .cancel) { _ in }
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func editTracker(at indexPath: IndexPath) {
+    }
+} */
+    
+    
+    
+    
+    
+    
+    
+    
+    /*
+    
+    func deleteTracker(at indexPath: IndexPath) {
+        let alert = UIAlertController(
+            title: "",
+            message: "Уверены, что хотите удалить трекер?",
+            preferredStyle: .actionSheet)
+        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) {
+            [weak self] _ in
+            guard let self = self else { return }
+            let tracker = currentCategories[indexPath.section].trackers[indexPath.row]
+            trackerStore.deleteTracker(tracker: tracker)
+        }
+        let cancelAction = UIAlertAction(title: "Отменить", style: .cancel) { _ in }
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
+        self.present(alert, animated: true, completion: nil)
+        
+        fetchCategory()
+        collectionView.reloadData()
+        updateUI()
+    }
+    
+    func editTracker(at indexPath: IndexPath) {
+    }
+    
+    func record(_ sender: Bool, _ cell: TrackersViewCell) {
+           guard let indexPath = collectionView.indexPath(for: cell) else { return }
+           let id = currentCategories[indexPath.section].trackers[indexPath.row].id
+           let newRecord = TrackerRecord(trackerID: id, date: currentDate)
+           
+           switch sender {
+           case true:
+               completedTrackers.insert(newRecord)
+               do {
+                   try trackerRecordStore.addTrackerRecord(from: newRecord)
+               } catch {
+                   print("Failed to save tracker record: \(error)")
+               }
+           case false:
+               completedTrackers.remove(newRecord)
+               do {
+                   try trackerRecordStore.deleteTrackerRecord(trackerRecord: newRecord)
+               } catch {
+                   print("Failed to delete tracker record: \(error)")
+               }
+           }
+           
+           collectionView.reloadItems(at: [indexPath])
+       }
+    /*func record(_ sender: Bool, _ cell: TrackersViewCell) {
+            guard let indexPath = collectionView.indexPath(for: cell) else { return }
+        _ = currentCategories[indexPath.section].trackers[indexPath.row]
+            
+            if sender {
+                pinTracker(at: indexPath)
+            } else {
+                unpinTracker(at: indexPath)
+            }
+        } */
+        
+        func isTrackerPinned(at indexPath: IndexPath) -> Bool {
+            // Проверяем, находится ли привычка в категории "Закрепленные"
+            return currentCategories[indexPath.section].title == "Закрепленные"
+        }
+        
+        func pinTracker(at indexPath: IndexPath) {
+            let tracker = currentCategories[indexPath.section].trackers[indexPath.row]
+            let currentCategory = currentCategories[indexPath.section].title
+            
+            if currentCategory == "Закрепленные" {
+                // Если привычка уже закреплена, ничего не делаем
+                return
+            }
+            
+            // Удаляем привычку из текущей категории и добавляем в "Закрепленные"
+            try? trackerCategoryStore.deleteTrackerFromCategory(tracker: tracker, from: currentCategory)
+            originalCategories[tracker.id] = currentCategory
+            try? trackerCategoryStore.addNewTrackerToCategory(tracker, to: "Закрепленные")
+            
+            // Обновляем данные после изменений
+            fetchCategory()
+            updateUI()
+        }
+        
+        func unpinTracker(at indexPath: IndexPath) {
+            let tracker = currentCategories[indexPath.section].trackers[indexPath.row]
+            
+            if let originalCategory = originalCategories[tracker.id] {
+                // Удаляем привычку из категории "Закрепленные" и возвращаем в исходную категорию
+                try? trackerCategoryStore.deleteTrackerFromCategory(tracker: tracker, from: "Закрепленные")
+                try? trackerCategoryStore.addNewTrackerToCategory(tracker, to: originalCategory)
+                originalCategories.removeValue(forKey: tracker.id)
+            }
+       
+            // Обновляем данные после изменений
+            fetchCategory()
+            updateUI()
+        }*/
+    
+    
+    
+    
+    
+        
+  
+     /*   func record(_ sender: Bool, _ cell: TrackersViewCell) {
+            guard let indexPath = collectionView.indexPath(for: cell) else { return }
+            _ = currentCategories[indexPath.section].trackers[indexPath.row]
+            
+            if sender {
+                pinTracker(at: indexPath)
+            } else {
+                unpinTracker(at: indexPath)
+            }
+        }
+        
+        func isTrackerPinned(at indexPath: IndexPath) -> Bool {
+            // Проверяем, находится ли привычка в категории "Закрепленные"
+            return currentCategories[indexPath.section].title == "Закрепленные"
+        }
+        
+        func pinTracker(at indexPath: IndexPath) {
+            let tracker = currentCategories[indexPath.section].trackers[indexPath.row]
+            let currentCategory = currentCategories[indexPath.section].title
+            
+            if currentCategory == "Закрепленные" {
+                // Если привычка уже закреплена, ничего не делаем
+                return
+            }
+            
+            // Удаляем привычку из текущей категории и добавляем в "Закрепленные"
+            try? trackerCategoryStore.deleteTrackerFromCategory(tracker: tracker, from: currentCategory)
+            originalCategories[tracker.id] = currentCategory
+            try? trackerCategoryStore.addNewTrackerToCategory(tracker, to: "Закрепленные")
+            
+            fetchCategory()
+            collectionView.reloadData()
+            updateUI()
+        }
+        
+        func unpinTracker(at indexPath: IndexPath) {
+            let tracker = currentCategories[indexPath.section].trackers[indexPath.row]
+            
+            if let originalCategory = originalCategories[tracker.id] {
+                // Удаляем привычку из категории "Закрепленные" и возвращаем в исходную категорию
+                try? trackerCategoryStore.deleteTrackerFromCategory(tracker: tracker, from: "Закрепленные")
+                try? trackerCategoryStore.addNewTrackerToCategory(tracker, to: originalCategory)
+                originalCategories.removeValue(forKey: tracker.id)
+            }
+            
+            fetchCategory()
+            collectionView.reloadData()
+            updateUI()
+        } */
+
 extension TrackersViewController: NewTrackerViewControllerDelegate {
     func setDateForNewTracker() -> String {
         return dateFormatter.string(from: currentDate)
@@ -475,21 +777,3 @@ extension TrackersViewController {
         trackerCategoryStore.createCategoryAndTracker(tracker: tracker, with: titleCategory)
     }
 }
-
-/*import YandexMobileMetrica
-
-extension TrackersViewController {
-    private func logEvent(_ event: String, item: String? = nil) {
-        var parameters: [String: Any] = [
-            "event": event,
-            "screen": "Main"
-        ]
-        if let item = item {
-            parameters["item"] = item
-        }
-        YMMYandexMetrica.reportEvent("ui_event", parameters: parameters, onFailure: { error in
-            print("Failed to report event: \(error.localizedDescription)")
-        })
-        
-        print("Event reported: \(parameters)")
-    }*/

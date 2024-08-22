@@ -100,6 +100,18 @@ final class TrackerStore: NSObject {
             schedule: trackersCoreData.schedule?.components(separatedBy: ",") ?? []
         )
     }
+    
+    func deleteTracker(tracker: Tracker) {
+        do {
+            let targetTrackers = try fetchTrackerCoreData()
+            if let index = targetTrackers.firstIndex(where: {$0.id == tracker.id}) {
+                context.delete(targetTrackers[index])
+                try context.save()
+            }
+        } catch {
+            print("Ошибка при получении трекеров: \(error)")
+        }
+    }
 }
 
 extension TrackerStore: NSFetchedResultsControllerDelegate {

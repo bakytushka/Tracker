@@ -31,6 +31,13 @@ enum Colors {
     static let switchViewColor = UIColor(red: 55/255, green: 114/255, blue: 231/255, alpha: 1.0)
 }
 
+enum TrackerFilter {
+    case all
+    case today
+    case completed
+    case notCompleted
+}
+
 extension Constant {
     static func randomEmoji() -> String {
         return emojies.randomElement() ?? "🤪"

@@ -118,6 +118,20 @@ final class TrackerCategoryStore: NSObject {
             throw StoreError.decodeError
         }
     }
+    
+    func deleteTrackerFromCategory(tracker: Tracker, from categoryTitle: String) throws {
+        guard let category = category(with: categoryTitle) else { return }
+        var currentTrackers = category.trackers?.allObjects as? [TrackerCoreData] ?? []
+        if let index = currentTrackers.firstIndex(where: { $0.id == tracker.id }) {
+            currentTrackers.remove(at: index)
+            category.trackers = NSSet(array: currentTrackers)
+            do {
+                try context.save()
+            } catch {
+                throw StoreError.decodeError
+            }
+        }
+    }
 }
 
 extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
@@ -125,3 +139,21 @@ extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
         delegate?.didUpdateCategories()
     }
 }
+
+/*extension TrackerCategoryStore {
+    // Метод для проверки, закреплен ли трекер
+    func isTrackerPinned(_ tracker: Tracker) -> Bool {
+        // Получаем список всех закрепленных трекеров из Core Data
+        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", tracker.id as CVarArg)
+        
+        do {
+            let pinnedTrackers = try context.fetch(fetchRequest)
+            // Возвращаем true, если трекер найден в списке закрепленных трекеров
+            return !pinnedTrackers.isEmpty
+        } catch {
+            print("Failed to fetch pinned trackers: \(error)")
+            return false
+        }
+    }
+} */

@@ -6,6 +6,11 @@ protocol TrackerViewCellDelegate: AnyObject {
     func record(_ sender: Bool, _ cell: TrackersViewCell)
     func completeTracker(id: UUID, at indexPath: IndexPath)
     func uncompleteTracker(id: UUID, at indexPath: IndexPath)
+  /*  func unpinTracker(at indexPath: IndexPath)
+    func pinTracker(at indexPath: IndexPath)
+    func editTracker(at indexPath: IndexPath)
+    func deleteTracker(at indexPath: IndexPath)
+    func isTrackerPinned(at indexPath: IndexPath) -> Bool */
 }
 
 final class TrackersViewCell: UICollectionViewCell {
@@ -25,6 +30,8 @@ final class TrackersViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+ //       let interaction = UIContextMenuInteraction(delegate: self)
+ //       colorOfCellView.addInteraction(interaction)
     }
     
     required init?(coder: NSCoder) {
@@ -189,3 +196,36 @@ final class TrackersViewCell: UICollectionViewCell {
         }
     }
 }
+
+/*extension TrackersViewCell: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        guard let indexPath = indexPath else { return nil }
+        
+        let configContextMenu = UIContextMenuConfiguration(actionProvider: { _ in
+            let isPinned = self.delegate?.isTrackerPinned(at: indexPath) ?? false
+            let pinTitle = isPinned ? "Открепить" : "Закрепить"
+            
+            let pinAction = UIAction(title: pinTitle) { _ in
+                if isPinned {
+                    self.delegate?.unpinTracker(at: indexPath)
+                } else {
+                    self.delegate?.pinTracker(at: indexPath)
+                }
+            }
+            
+            let editAction = UIAction(title: "Редактировать") { _ in
+                self.delegate?.editTracker(at: indexPath)
+            }
+            
+            let deleteAction = UIAction(title: "Удалить",
+                                  attributes: .destructive) { _ in
+                self.delegate?.deleteTracker(at: indexPath)
+            }
+            
+            let actions = [pinAction, editAction, deleteAction]
+            return UIMenu(title: "", children: actions)
+        })
+        
+        return configContextMenu
+    }
+} */

@@ -18,6 +18,7 @@ enum Constant {
     static let daysOfWeekTitles = [
         "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"
     ]
+    static let filterTitles = ["Все трекеры", "Трекеры на сегодня", "Завершенные", "Не завершенные"]
     
     static let colorSelection = (1...18).map({ UIColor(named: String($0)) })
     static let collectionViewTitles = ["Emoji", "Цвет"]
@@ -35,7 +36,7 @@ enum TrackerFilter {
     case all
     case today
     case completed
-    case notCompleted
+    case uncompleted
 }
 
 extension Constant {

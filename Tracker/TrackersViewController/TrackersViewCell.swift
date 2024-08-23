@@ -137,7 +137,11 @@ final class TrackersViewCell: UICollectionViewCell {
     }
     
     private func setupCounterOfDaysLabelText(_ count: Int) -> String {
-        let daysForms = ["дней", "день", "дня"]
+        let daysForms = [
+            NSLocalizedString("daysMany", comment: "Plural form for days"),
+            NSLocalizedString("day", comment: "Singular form for day"),
+            NSLocalizedString("days", comment: "Few form for days")
+        ]
         let remainder100 = count % 100
         let remainder10 = count % 10
         

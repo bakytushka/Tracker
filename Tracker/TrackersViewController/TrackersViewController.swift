@@ -132,7 +132,7 @@ final class TrackersViewController: UIViewController {
     }
     
     private func setupFilterButton() {
-        filterButton.setTitle("Фильтры", for: .normal)
+        filterButton.setTitle(NSLocalizedString("Filters", comment: "Title for the filter button"), for: .normal)
         filterButton.setTitleColor(.white, for: .normal)
         filterButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         filterButton.backgroundColor = UIColor(red: 55/255, green: 114/255, blue: 231/255, alpha: 1.0)
@@ -173,7 +173,9 @@ final class TrackersViewController: UIViewController {
     
     private func setupNaviBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.title = "Трекеры"
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
+        navigationItem.largeTitleDisplayMode = .always
+        navigationItem.title = NSLocalizedString("Trackers", comment: "Title for the main screen")
         
         let searchController = UISearchController(searchResultsController: nil)
         searchController.automaticallyShowsCancelButton = true

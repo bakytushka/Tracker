@@ -6,11 +6,7 @@ protocol TrackerViewCellDelegate: AnyObject {
     func record(_ sender: Bool, _ cell: TrackersViewCell)
     func completeTracker(id: UUID, at indexPath: IndexPath)
     func uncompleteTracker(id: UUID, at indexPath: IndexPath)
-  /*  func unpinTracker(at indexPath: IndexPath)
-    func pinTracker(at indexPath: IndexPath)
-    func editTracker(at indexPath: IndexPath)
-    func deleteTracker(at indexPath: IndexPath)
-    func isTrackerPinned(at indexPath: IndexPath) -> Bool */
+    func isTrackerPinned(at indexPath: IndexPath) -> Bool
 }
 
 final class TrackersViewCell: UICollectionViewCell {
@@ -26,18 +22,21 @@ final class TrackersViewCell: UICollectionViewCell {
     weak var delegate: TrackerViewCellDelegate?
     static let reuseIdentifier = "TrackerCell"
     
+    var onPin: (() -> Void)?
+    var onEdit: (() -> Void)?
+    var onDelete: (() -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
- //       let interaction = UIContextMenuInteraction(delegate: self)
- //       colorOfCellView.addInteraction(interaction)
+        let interaction = UIContextMenuInteraction(delegate: self)
+        colorOfCellView.addInteraction(interaction)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     private func setupUI() {
         setupTrackersNameLabel()
         setupTrackersNameLabel()
@@ -101,7 +100,7 @@ final class TrackersViewCell: UICollectionViewCell {
     private func setupCounterOfDaysLabel() {
         counterOfDaysLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         counterOfDaysLabel.lineBreakMode = .byWordWrapping
-  //      counterOfDaysLabel.text = setupCounterOfDaysLabelText(counterOfDays)
+        //      counterOfDaysLabel.text = setupCounterOfDaysLabelText(counterOfDays)
     }
     
     private func setupCompletionButton() {
@@ -175,16 +174,16 @@ final class TrackersViewCell: UICollectionViewCell {
     }
     
     private func updateCompletionButtonColor() {
-            let darkModeColor = UIColor(red: 26/255.0, green: 27/255.0, blue: 34/255.0, alpha: 1.0)
-            let lightModeColor = UIColor.white
-            
+        let darkModeColor = UIColor(red: 26/255.0, green: 27/255.0, blue: 34/255.0, alpha: 1.0)
+        let lightModeColor = UIColor.white
+        
         completionButton.tintColor = UITraitCollection.current.userInterfaceStyle == .dark ? darkModeColor : lightModeColor
-        }
+    }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-            super.traitCollectionDidChange(previousTraitCollection)
-            updateCompletionButtonColor()
-        }
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateCompletionButtonColor()
+    }
     
     @objc private func didTapCompletionButton() {
         AnalyticsService.shared.logEvent("click", item: "track")
@@ -199,37 +198,37 @@ final class TrackersViewCell: UICollectionViewCell {
             delegate?.completeTracker(id: trackerId, at: indexPath)
         }
     }
+    
+    func isTrackerPinned() -> Bool {
+        guard let indexPath = indexPath else { return false }
+        return delegate?.isTrackerPinned(at: indexPath) ?? false
+    }
 }
 
-/*extension TrackersViewCell: UIContextMenuInteractionDelegate {
-    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        guard let indexPath = indexPath else { return nil }
-        
-        let configContextMenu = UIContextMenuConfiguration(actionProvider: { _ in
-            let isPinned = self.delegate?.isTrackerPinned(at: indexPath) ?? false
-            let pinTitle = isPinned ? "Открепить" : "Закрепить"
+extension TrackersViewCell: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction,
+                                configurationForMenuAtLocation location: CGPoint
+    ) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] suggestedActions in
+            guard let self = self else { return UIMenu(title: "", children: []) }
+            let pinActionTitle = self.isTrackerPinned() ? "Открепить" : "Закрепить"
+            let pinAction = UIAction(title: pinActionTitle) { [weak self] action in
+                self?.onPin?()
+            }
             
-            let pinAction = UIAction(title: pinTitle) { _ in
-                if isPinned {
-                    self.delegate?.unpinTracker(at: indexPath)
-                } else {
-                    self.delegate?.pinTracker(at: indexPath)
+            let editAction = UIAction(title: "Редактировать"
+            ) { [weak self] action in
+                AnalyticsService.shared.logEvent("click", item: "edit")
+                self?.onEdit?()
+            }
+            
+            let deleteAction = UIAction(
+                title: "Удалить",
+                attributes: .destructive) { [weak self] action in
+                    AnalyticsService.shared.logEvent("click", item: "delete")
+                    self?.onDelete?()
                 }
-            }
-            
-            let editAction = UIAction(title: "Редактировать") { _ in
-                self.delegate?.editTracker(at: indexPath)
-            }
-            
-            let deleteAction = UIAction(title: "Удалить",
-                                  attributes: .destructive) { _ in
-                self.delegate?.deleteTracker(at: indexPath)
-            }
-            
-            let actions = [pinAction, editAction, deleteAction]
-            return UIMenu(title: "", children: actions)
-        })
-        
-        return configContextMenu
+            return UIMenu(title: "", children: [pinAction, editAction, deleteAction])
+        }
     }
-} */
+}

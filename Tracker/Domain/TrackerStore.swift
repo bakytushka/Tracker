@@ -10,10 +10,10 @@ import UIKit
 
 final class TrackerStore: NSObject {
     public weak var delegate: TrackerCategoryStoreDelegate?
-
+    
     private let context: NSManagedObjectContext
     private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>?
-
+    
     convenience override init() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             preconditionFailure("Couldn't get app delegate")
@@ -21,13 +21,13 @@ final class TrackerStore: NSObject {
         let context = appDelegate.persistentContainer.viewContext
         self.init(context: context)
     }
-
+    
     init(context: NSManagedObjectContext) {
         self.context = context
         super.init()
         setupFetchedResultsController()
     }
-
+    
     private func setupFetchedResultsController() {
         let fetchRequest = TrackerCoreData.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \TrackerCoreData.name, ascending: true)]
@@ -45,7 +45,7 @@ final class TrackerStore: NSObject {
             print("Failed to fetch trackers: \(error)")
         }
     }
-
+    
     func addTracker(from tracker: Tracker) -> TrackerCoreData? {
         print("Attempting to add new record: \(tracker)")
         guard let trackerEntity = NSEntityDescription.entity(forEntityName: "TrackerCoreData", in: context) else { return nil }
@@ -57,7 +57,7 @@ final class TrackerStore: NSObject {
         newTracker.color = UIColorMarshalling.hexString(from: tracker.color)
         return newTracker
     }
-
+    
     func fetchTrackers() throws -> [Tracker] {
         let fetchRequest = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
         do {
@@ -75,7 +75,7 @@ final class TrackerStore: NSObject {
             throw StoreError.decodeError
         }
     }
-
+    
     func fetchTrackerCoreData() throws -> [TrackerCoreData] {
         let fetchRequest = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
         do {
@@ -84,7 +84,7 @@ final class TrackerStore: NSObject {
             throw StoreError.decodeError
         }
     }
-
+    
     func changeTrackers(from trackersCoreData: TrackerCoreData) -> Tracker? {
         guard
             let id = trackersCoreData.id,
@@ -101,16 +101,54 @@ final class TrackerStore: NSObject {
         )
     }
     
-    func deleteTracker(tracker: Tracker) {
+    func deleteTracker(trackerId: UUID) {
         do {
             let targetTrackers = try fetchTrackerCoreData()
-            if let index = targetTrackers.firstIndex(where: {$0.id == tracker.id}) {
-                context.delete(targetTrackers[index])
+            if let trackerToDelete = targetTrackers.first(where: { $0.id == trackerId }) {
+                context.delete(trackerToDelete)
                 try context.save()
+            } else {
+                print("Трекер с идентификатором \(trackerId) не найден.")
             }
         } catch {
-            print("Ошибка при получении трекеров: \(error)")
+            print("Ошибка при удалении трекера: \(error)")
         }
+    }
+    
+    func fetchTracker(withId id: UUID) -> Tracker? {
+        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            if let trackerCoreData = results.first {
+                return changeTrackers(from: trackerCoreData)
+            }
+        } catch {
+            print("Failed to fetch tracker with id \(id): \(error)")
+        }
+        
+        return nil
+    }
+    
+    func updateTracker(_ tracker: Tracker) -> TrackerCoreData? {
+        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", tracker.id as CVarArg)
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            if let trackerEntity = results.first {
+                trackerEntity.name = tracker.name
+                trackerEntity.color = UIColorMarshalling.hexString(from: tracker.color)
+                trackerEntity.emoji = tracker.emoji
+                trackerEntity.schedule = tracker.schedule.joined(separator: ",")
+                try context.save()
+                return trackerEntity
+            }
+        } catch {
+            print("Error updating tracker: \(error)")
+        }
+        return nil
     }
 }
 
@@ -127,3 +165,4 @@ protocol TrackerCategoryStoreDelegate: AnyObject {
 enum StoreError: Error {
     case decodeError
 }
+

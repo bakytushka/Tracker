@@ -10,26 +10,42 @@ import CoreData
 
 final class TrackerCategoryStore: NSObject {
     public weak var delegate: TrackerCategoryStoreDelegate?
-
-    private let trackerStore: TrackerStore
+    
+    private let trackerStore = TrackerStore()
     private let context: NSManagedObjectContext
     private var fetchedResultsController: NSFetchedResultsController<TrackerCategoryCoreData>?
-
+    
     convenience override init() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            preconditionFailure("Couldn't get app delegate")
+            preconditionFailure("couldn't get app delegate")
         }
         let context = appDelegate.persistentContainer.viewContext
-        self.init(context: context)
+        do {
+            try self.init(context: context)
+        } catch {
+            preconditionFailure("Failed to initialize TrackerCategoryStore: \(error)")
+        }
     }
-
-    init(context: NSManagedObjectContext) {
+    
+    init(context: NSManagedObjectContext) throws {
         self.context = context
-        self.trackerStore = TrackerStore(context: context)
         super.init()
-        setupFetchedResultsController()
+        
+        let fetchRequest = TrackerCategoryCoreData.fetchRequest()
+        fetchRequest.sortDescriptors = [
+            NSSortDescriptor(keyPath: \TrackerCategoryCoreData.title, ascending: true)
+        ]
+        let controller = NSFetchedResultsController(
+            fetchRequest: fetchRequest,
+            managedObjectContext: context,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        controller.delegate = self
+        self.fetchedResultsController = controller
+        try controller.performFetch()
     }
-
+    
     private func setupFetchedResultsController() {
         let fetchRequest = TrackerCategoryCoreData.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \TrackerCategoryCoreData.title, ascending: true)]
@@ -47,7 +63,7 @@ final class TrackerCategoryStore: NSObject {
             print("Failed to fetch categories: \(error)")
         }
     }
-
+    
     func addNewCategory(_ categoryName: TrackerCategory) throws {
         guard let trackerCategoryEntity = NSEntityDescription.entity(forEntityName: "TrackerCategoryCoreData", in: context) else { return }
         let newCategory = TrackerCategoryCoreData(entity: trackerCategoryEntity, insertInto: context)
@@ -59,7 +75,7 @@ final class TrackerCategoryStore: NSObject {
             throw StoreError.decodeError
         }
     }
-
+    
     func fetchCategories() throws -> [TrackerCategoryCoreData] {
         let fetchRequest = NSFetchRequest<TrackerCategoryCoreData>(entityName: "TrackerCategoryCoreData")
         do {
@@ -68,7 +84,7 @@ final class TrackerCategoryStore: NSObject {
             throw StoreError.decodeError
         }
     }
-
+    
     func updateTrackerCategory(_ category: TrackerCategoryCoreData) -> TrackerCategory? {
         guard let newTitle = category.title, let trackers = category.trackers else { return nil }
         return TrackerCategory(title: newTitle, trackers: trackers.compactMap { coreDataTracker in
@@ -78,7 +94,7 @@ final class TrackerCategoryStore: NSObject {
             return nil
         })
     }
-
+    
     func createCategoryAndTracker(tracker: Tracker, with titleCategory: String) {
         guard let trackerCoreData = trackerStore.addTracker(from: tracker), let currentCategory = category(with: titleCategory) else { return }
         var currentTrackers = currentCategory.trackers?.allObjects as? [TrackerCoreData] ?? []
@@ -90,7 +106,7 @@ final class TrackerCategoryStore: NSObject {
             print("Failed to save context: \(error)")
         }
     }
-
+    
     func addNewTrackerToCategory(_ tracker: Tracker, to trackerCategory: String) throws {
         let newTrackerCoreData = try trackerStore.fetchTrackerCoreData()
         guard let currentCategory = category(with: trackerCategory) else { return }
@@ -105,11 +121,11 @@ final class TrackerCategoryStore: NSObject {
             throw StoreError.decodeError
         }
     }
-
+    
     private func category(with categoryName: String) -> TrackerCategoryCoreData? {
         return try? fetchCategories().first { $0.title == categoryName }
     }
-
+    
     func deleteCategory(_ category: TrackerCategoryCoreData) throws {
         context.delete(category)
         do {
@@ -132,6 +148,29 @@ final class TrackerCategoryStore: NSObject {
             }
         }
     }
+    
+}
+
+extension TrackerCategoryStore {
+    func getCategoryTitle(for identifier: String) -> String? {
+        guard let categories = try? fetchCategories() else { return nil }
+        if let category = categories.first(where: { $0.title == identifier }) {
+            return category.title
+        }
+        return nil
+    }
+}
+
+extension TrackerCategoryStore {
+    func getCategory(byTitle title: String) -> TrackerCategoryCoreData? {
+        do {
+            let categories = try fetchCategories()
+            return categories.first(where: { $0.title == title })
+        } catch {
+            print("Error fetching categories: \(error)")
+            return nil
+        }
+    }
 }
 
 extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
@@ -139,21 +178,3 @@ extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
         delegate?.didUpdateCategories()
     }
 }
-
-/*extension TrackerCategoryStore {
-    // Метод для проверки, закреплен ли трекер
-    func isTrackerPinned(_ tracker: Tracker) -> Bool {
-        // Получаем список всех закрепленных трекеров из Core Data
-        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == %@", tracker.id as CVarArg)
-        
-        do {
-            let pinnedTrackers = try context.fetch(fetchRequest)
-            // Возвращаем true, если трекер найден в списке закрепленных трекеров
-            return !pinnedTrackers.isEmpty
-        } catch {
-            print("Failed to fetch pinned trackers: \(error)")
-            return false
-        }
-    }
-} */

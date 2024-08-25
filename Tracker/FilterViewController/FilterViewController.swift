@@ -44,7 +44,7 @@ final class FilterViewController: UIViewController {
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             tableView.heightAnchor.constraint(equalToConstant: 300)
-            ])
+        ])
     }
     
     private func setupNavigationBar() {
@@ -65,7 +65,7 @@ extension FilterViewController: UITableViewDelegate, UITableViewDataSource {
         cell.textLabel?.text = filterTitle[indexPath.row]
         cell.selectionStyle = .none
         cell.backgroundColor = UIColor(red: 230/255, green: 232/255, blue: 235/255, alpha: 0.3)
-
+        
         if selectedFilter == filterTypes[indexPath.row] {
             let checkmarkImage = UIImage(systemName: "checkmark")?.withRenderingMode(.alwaysTemplate)
             let checkmarkImageView = UIImageView(image: checkmarkImage)
@@ -120,8 +120,8 @@ extension FilterViewController: UITableViewDelegate, UITableViewDataSource {
         selectedFilter = filterTypes[indexPath.row]
         tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
         if let selectedFilter = selectedFilter {
-                delegate?.didSelectFilter(selectedFilter)
-            }
+            delegate?.didSelectFilter(selectedFilter)
+        }
         dismiss(animated: true)
     }
 }

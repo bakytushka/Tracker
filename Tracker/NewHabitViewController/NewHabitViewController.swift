@@ -173,9 +173,8 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
         createButton.backgroundColor = Colors.buttonInactive
         createButton.layer.cornerRadius = 16
         createButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-        //      let title = isEditingTracker ? "Создать" : "Сохранить"
+        let title = isEditingTracker ? "Сохранить" : "Создать"
         createButton.setTitle(title, for: .normal)
-        createButton.setTitle("Создать", for: .normal)
         createButton.isEnabled = false
         createButton.addTarget(
             self,

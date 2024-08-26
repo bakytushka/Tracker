@@ -12,7 +12,7 @@ final class StatisticViewController: UIViewController {
     private var completedTrackers: Set<TrackerRecord> = []
     private let trackerRecordStore = TrackerRecordStore()
     
-    private let placeholderLabel: UILabel = {
+    private let plugLabel: UILabel = {
         let label = UILabel()
         label.text = "Анализировать пока нечего"
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
@@ -20,7 +20,7 @@ final class StatisticViewController: UIViewController {
         return label
     }()
     
-    private let placeholderImageView: UIImageView = {
+    private let plugImageView: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "statisticPlug")
         return image
@@ -70,7 +70,7 @@ final class StatisticViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .white
         
-        [placeholderImageView, placeholderLabel, statViewContainer].forEach {
+        [plugImageView, plugLabel, statViewContainer].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
@@ -86,13 +86,13 @@ final class StatisticViewController: UIViewController {
             statViewContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             statViewContainer.heightAnchor.constraint(equalToConstant: 90),
             
-            placeholderImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            placeholderImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            placeholderImageView.widthAnchor.constraint(equalToConstant: 80),
-            placeholderImageView.heightAnchor.constraint(equalToConstant: 80),
+            plugImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            plugImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            plugImageView.widthAnchor.constraint(equalToConstant: 80),
+            plugImageView.heightAnchor.constraint(equalToConstant: 80),
             
-            placeholderLabel.topAnchor.constraint(equalTo: placeholderImageView.bottomAnchor, constant: 10),
-            placeholderLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            plugLabel.topAnchor.constraint(equalTo: plugImageView.bottomAnchor, constant: 10),
+            plugLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
             titleLabel.topAnchor.constraint(equalTo: statViewContainer.topAnchor, constant: 12),
             titleLabel.leftAnchor.constraint(equalTo: statViewContainer.leftAnchor, constant: 12),
@@ -109,20 +109,20 @@ final class StatisticViewController: UIViewController {
     
     private func updateUI() {
         if completedTrackers.isEmpty {
-            placeholderImageView.isHidden = false
-            placeholderLabel.isHidden = false
+            plugImageView.isHidden = false
+            plugLabel.isHidden = false
             statViewContainer.isHidden = true
         } else {
-            placeholderImageView.isHidden = true
-            placeholderLabel.isHidden = true
+            plugImageView.isHidden = true
+            plugLabel.isHidden = true
             statViewContainer.isHidden = false
         }
     }
     
     private func updateStatistic() {
         completedTrackers = trackerRecordStore.completedTrackers
-        let quantity = completedTrackers.count
-        titleLabel.text = String(quantity)
+        let amount = completedTrackers.count
+        titleLabel.text = String(amount)
         updateUI()
     }
     

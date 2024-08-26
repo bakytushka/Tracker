@@ -50,3 +50,18 @@ enum TrackerType {
     case habit
     case event
 }
+
+extension WeekDay {
+    static func from(string: String) -> WeekDay? {
+        switch string {
+        case "Пн": return .monday
+        case "Вт": return .tuesday
+        case "Ср": return .wednesday
+        case "Чт": return .thursday
+        case "Пт": return .friday
+        case "Сб": return .saturday
+        case "Вс": return .sunday
+        default: return nil
+        }
+    }
+}

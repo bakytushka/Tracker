@@ -31,6 +31,7 @@ final class FilterViewController: UIViewController {
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.register(FilterTableViewCell.self, forCellReuseIdentifier: "FilterCell")
         setupUI()
         setupNavigationBar()
     }
@@ -61,28 +62,12 @@ extension FilterViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: "cell")
-        cell.textLabel?.text = filterTitle[indexPath.row]
-        cell.selectionStyle = .none
+        let cell = tableView.dequeueReusableCell(withIdentifier: "FilterCell", for: indexPath) as! FilterTableViewCell
+        let title = filterTitle[indexPath.row]
+        let isSelected = selectedFilter == filterTypes[indexPath.row]
+        cell.configure(with: title, isSelected: isSelected)
         cell.backgroundColor = UIColor(red: 230/255, green: 232/255, blue: 235/255, alpha: 0.3)
-        
-        if selectedFilter == filterTypes[indexPath.row] {
-            let checkmarkImage = UIImage(systemName: "checkmark")?.withRenderingMode(.alwaysTemplate)
-            let checkmarkImageView = UIImageView(image: checkmarkImage)
-            checkmarkImageView.tintColor = UIColor(red: 55/255, green: 114/255, blue: 231/255, alpha: 1.0)
-            checkmarkImageView.translatesAutoresizingMaskIntoConstraints = false
-            cell.contentView.addSubview(checkmarkImageView)
-            
-            NSLayoutConstraint.activate([
-                checkmarkImageView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -20.7),
-                checkmarkImageView.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
-                checkmarkImageView.widthAnchor.constraint(equalToConstant: 24),
-                checkmarkImageView.heightAnchor.constraint(equalToConstant: 24)
-            ])
-        } else {
-            cell.accessoryView = nil
-        }
-        
+        cell.selectionStyle = .none
         return cell
     }
     
@@ -111,18 +96,9 @@ extension FilterViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let previousSelectedFilter = selectedFilter,
-           let previousSelectedIndex = filterTypes.firstIndex(of: previousSelectedFilter) {
-            let previousIndexPath = IndexPath(row: previousSelectedIndex, section: 0)
-            tableView.cellForRow(at: previousIndexPath)?.accessoryType = .none
-        }
-        
         selectedFilter = filterTypes[indexPath.row]
-        tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        if let selectedFilter = selectedFilter {
-            delegate?.didSelectFilter(selectedFilter)
-        }
+        tableView.reloadData()
+        delegate?.didSelectFilter(selectedFilter!)
         dismiss(animated: true)
     }
 }
-

@@ -19,7 +19,6 @@ enum Constant {
         "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"
     ]
     static let filterTitles = ["Все трекеры", "Трекеры на сегодня", "Завершенные", "Не завершенные"]
-    
     static let colorSelection = (1...18).map({ UIColor(named: String($0)) })
     static let collectionViewTitles = ["Emoji", "Цвет"]
 }

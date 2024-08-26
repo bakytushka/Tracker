@@ -34,6 +34,10 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
         frame: .zero,
         collectionViewLayout: UICollectionViewFlowLayout()
     )
+    
+    var isEditingTracker = false
+    private var editedTracker: Tracker?
+    
     var selectedCategory: TrackerCategory? {
         didSet {
             if let category = selectedCategory {
@@ -42,6 +46,7 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
             }
         }
     }
+    
     var categoryName: String = "" {
         didSet {
             if !categoryName.isEmpty {
@@ -49,8 +54,6 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
             }
         }
     }
-    var isEditingTracker = false
-    private var editedTracker: Tracker?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,47 +61,6 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
         setupUI()
         addTapGestureToHideKeyboard()
         updateCreateButtonState()
-    }
-    
-    private func updateSelectedItemsInCollectionView() {
-        for (index, emoji) in Constant.emojies.enumerated() {
-            let indexPath = IndexPath(item: index, section: 0)
-            let cell = collectionView.cellForItem(at: indexPath) as? NewTrackerCollectionViewCell
-            cell?.isSelected = (emoji == selectedEmoji)
-        }
-        
-        for (index, color) in Constant.colorSelection.enumerated() {
-            let indexPath = IndexPath(item: index, section: 1)
-            let cell = collectionView.cellForItem(at: indexPath) as? NewTrackerCollectionViewCell
-            cell?.isSelected = (color == selectedColor)
-        }
-    }
-    
-    func setupEditTracker(tracker: Tracker) {
-        isEditingTracker = true
-        editedTracker = tracker
-        nameTextField.text = tracker.name
-        schedule = tracker.schedule
-        selectedEmoji = tracker.emoji
-        selectedColor = tracker.color
-        selectedDays = [:]
-        
-        let days = tracker.schedule
-        for day in days {
-            switch day {
-            case "Пн": selectedDays[.monday] = true
-            case "Вт": selectedDays[.tuesday] = true
-            case "Ср": selectedDays[.wednesday] = true
-            case "Чт": selectedDays[.thursday] = true
-            case "Пт": selectedDays[.friday] = true
-            case "Сб": selectedDays[.saturday] = true
-            case "Вс": selectedDays[.sunday] = true
-            default: break
-            }
-        }
-        tableView.reloadData()
-        collectionView.reloadData()
-        updateSelectedItemsInCollectionView()
     }
     
     private func setupUI() {
@@ -260,9 +222,25 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
         return true
     }
     
-    @objc private func textFieldDidChange(_ textField: UITextField) {
-        updateCreateButtonState()
+    func setupEditTracker(tracker: Tracker) {
+        isEditingTracker = true
+        editedTracker = tracker
+        nameTextField.text = tracker.name
+        schedule = tracker.schedule
+        selectedEmoji = tracker.emoji
+        selectedColor = tracker.color
+        selectedDays = [:]
+        
+        for day in tracker.schedule {
+            if let weekDay = WeekDay.from(string: day) {
+                selectedDays[weekDay] = true
+            }
+        }
+        
+        tableView.reloadData()
+        collectionView.reloadData()
     }
+    
     private func updateCreateButtonState() {
         let isNameTextFieldNotEmpty = !(nameTextField.text?.isEmpty ?? true)
         let isCategorySelected = categoryName != ""
@@ -278,6 +256,10 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
         
         createButton.isEnabled = shouldEnableCreateButton
         createButton.backgroundColor = shouldEnableCreateButton ? .black : Colors.buttonInactive
+    }
+    
+    @objc private func textFieldDidChange(_ textField: UITextField) {
+        updateCreateButtonState()
     }
     
     @objc func cancelButtonTapped(){
@@ -431,13 +413,21 @@ extension NewHabitViewController: UICollectionViewDataSource {
         
         switch indexPath.section {
         case 0:
-            cell.setEmoji(Constant.emojies[indexPath.row])
-            cell.isSelected = (Constant.emojies[indexPath.row] == selectedEmoji)
-        default:
+            let emoji = Constant.emojies[indexPath.row]
+            cell.setEmoji(emoji)
+            if emoji == selectedEmoji {
+                collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
+            }
+        case 1:
             if let color = Constant.colorSelection[indexPath.row] {
                 cell.setColor(color)
                 cell.isSelected = (color == selectedColor)
+                if color == selectedColor {
+                    collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
+                }
             }
+        default:
+            break
         }
         return cell
     }

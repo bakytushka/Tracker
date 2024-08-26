@@ -262,7 +262,7 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
         updateCreateButtonState()
     }
     
-    @objc func cancelButtonTapped(){
+    @objc private func cancelButtonTapped(){
         dismiss(animated: true, completion: nil)
     }
     

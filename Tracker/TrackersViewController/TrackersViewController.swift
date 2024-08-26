@@ -394,13 +394,13 @@ extension TrackersViewController: UICollectionViewDataSource {
             indexPath: indexPath
         )
         
-        cell.onPin = { [weak self] in
+        cell.didTapPin = { [weak self] in
             guard let self = self else { return }
             let tracker = self.currentCategories[indexPath.section].trackers[indexPath.row]
             self.togglePinTracker(tracker: tracker, at: indexPath)
         }
         
-        cell.onDelete = { [weak self] in
+        cell.didTapDelete = { [weak self] in
             let alert = UIAlertController(
                 title: "Уверены, что хотите удалить трекер?",
                 message: nil, preferredStyle: .actionSheet)
@@ -421,7 +421,7 @@ extension TrackersViewController: UICollectionViewDataSource {
             self?.present(alert, animated: true)
         }
         
-        cell.onEdit = { [weak self] in
+        cell.didTapEdit = { [weak self] in
             self?.editTracker(at: indexPath)
         }
         

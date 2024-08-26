@@ -15,6 +15,7 @@ final class TrackersViewCell: UICollectionViewCell {
     let counterOfDaysLabel = UILabel()
     let colorOfCellView = UIView()
     let completionButton = UIButton()
+    
     private var trackerIsCompleted = false
     private var trackerId: UUID?
     private var indexPath: IndexPath?
@@ -22,9 +23,9 @@ final class TrackersViewCell: UICollectionViewCell {
     weak var delegate: TrackerViewCellDelegate?
     static let reuseIdentifier = "TrackerCell"
     
-    var onPin: (() -> Void)?
-    var onEdit: (() -> Void)?
-    var onDelete: (() -> Void)?
+    var didTapPin: (() -> Void)?
+    var didTapEdit: (() -> Void)?
+    var didTapDelete: (() -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -100,7 +101,6 @@ final class TrackersViewCell: UICollectionViewCell {
     private func setupCounterOfDaysLabel() {
         counterOfDaysLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         counterOfDaysLabel.lineBreakMode = .byWordWrapping
-        //      counterOfDaysLabel.text = setupCounterOfDaysLabelText(counterOfDays)
     }
     
     private func setupCompletionButton() {
@@ -213,20 +213,20 @@ extension TrackersViewCell: UIContextMenuInteractionDelegate {
             guard let self = self else { return UIMenu(title: "", children: []) }
             let pinActionTitle = self.isTrackerPinned() ? "Открепить" : "Закрепить"
             let pinAction = UIAction(title: pinActionTitle) { [weak self] action in
-                self?.onPin?()
+                self?.didTapPin?()
             }
             
             let editAction = UIAction(title: "Редактировать"
             ) { [weak self] action in
                 AnalyticsService.shared.logEvent("click", item: "edit")
-                self?.onEdit?()
+                self?.didTapEdit?()
             }
             
             let deleteAction = UIAction(
                 title: "Удалить",
                 attributes: .destructive) { [weak self] action in
                     AnalyticsService.shared.logEvent("click", item: "delete")
-                    self?.onDelete?()
+                    self?.didTapDelete?()
                 }
             return UIMenu(title: "", children: [pinAction, editAction, deleteAction])
         }

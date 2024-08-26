@@ -66,8 +66,6 @@ extension FilterViewController: UITableViewDelegate, UITableViewDataSource {
         let title = filterTitle[indexPath.row]
         let isSelected = selectedFilter == filterTypes[indexPath.row]
         cell.configure(with: title, isSelected: isSelected)
-        cell.backgroundColor = UIColor(red: 230/255, green: 232/255, blue: 235/255, alpha: 0.3)
-        cell.selectionStyle = .none
         return cell
     }
     
@@ -76,23 +74,9 @@ extension FilterViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let separatorView = UIView()
-        separatorView.backgroundColor = UIColor.separator
-        separatorView.translatesAutoresizingMaskIntoConstraints = false
-        cell.contentView.addSubview(separatorView)
-        
-        NSLayoutConstraint.activate([
-            separatorView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 16),
-            separatorView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -16),
-            separatorView.heightAnchor.constraint(equalToConstant: 0.5)
-        ])
-        
-        if indexPath.row < filterTitle.count - 1 {
-            separatorView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor).isActive = true
-        } else {
-            separatorView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor).isActive = true
-            separatorView.isHidden = true
-        }
+        guard let filterCell = cell as? FilterTableViewCell else { return }
+                let isLastCell = indexPath.row == filterTitle.count - 1
+                filterCell.configureSeparator(isLastCell: isLastCell)
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

@@ -17,19 +17,19 @@ final class FilterTableViewCell: UITableViewCell {
     }()
     
     private lazy var separatorView: UIView = {
-            let view = UIView()
-            view.backgroundColor = UIColor.separator
-            view.translatesAutoresizingMaskIntoConstraints = false
-            contentView.addSubview(view)
-            NSLayoutConstraint.activate([
-                view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-                view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-                view.heightAnchor.constraint(equalToConstant: 0.5),
-                view.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
-            ])
-            return view
-        }()
-        
+        let view = UIView()
+        view.backgroundColor = UIColor.separator
+        view.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(view)
+        NSLayoutConstraint.activate([
+            view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            view.heightAnchor.constraint(equalToConstant: 0.5),
+            view.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        ])
+        return view
+    }()
+    
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -60,6 +60,6 @@ final class FilterTableViewCell: UITableViewCell {
     }
     
     func configureSeparator(isLastCell: Bool) {
-            separatorView.isHidden = isLastCell
-        }
+        separatorView.isHidden = isLastCell
+    }
 }

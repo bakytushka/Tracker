@@ -43,3 +43,22 @@ extension Constant {
         return emojies.randomElement() ?? "🤪"
     }
 }
+
+extension UIView {
+    func addGradientBorder(colors: [UIColor], width: CGFloat = 2, cornerRadius: CGFloat = 16) {
+        let gradient = CAGradientLayer()
+        gradient.frame = self.bounds
+        gradient.colors = colors.map { $0.cgColor }
+        gradient.startPoint = CGPoint(x: 0, y: 0.5)
+        gradient.endPoint = CGPoint(x: 1, y: 0.5)
+        
+        let shape = CAShapeLayer()
+        shape.lineWidth = width
+        shape.path = UIBezierPath(roundedRect: self.bounds, cornerRadius: cornerRadius).cgPath
+        shape.strokeColor = UIColor.black.cgColor
+        shape.fillColor = UIColor.clear.cgColor
+        gradient.mask = shape
+        
+        self.layer.addSublayer(gradient)
+    }
+}

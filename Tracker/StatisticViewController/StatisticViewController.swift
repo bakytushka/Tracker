@@ -64,7 +64,7 @@ final class StatisticViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         statViewContainer.frame = CGRect(x: 16, y: self.view.frame.midY - 45, width: self.view.frame.width - 32, height: 90)
-        addGradienBorder(to: statViewContainer, colors: [.red, .green, .blue])
+        statViewContainer.addGradientBorder(colors: [.red, .green, .blue])
     }
     
     private func setupUI() {
@@ -108,15 +108,9 @@ final class StatisticViewController: UIViewController {
     }
     
     private func updateUI() {
-        if completedTrackers.isEmpty {
-            plugImageView.isHidden = false
-            plugLabel.isHidden = false
-            statViewContainer.isHidden = true
-        } else {
-            plugImageView.isHidden = true
-            plugLabel.isHidden = true
-            statViewContainer.isHidden = false
-        }
+        plugImageView.isHidden = !completedTrackers.isEmpty
+        plugLabel.isHidden = !completedTrackers.isEmpty
+        statViewContainer.isHidden = completedTrackers.isEmpty
     }
     
     private func updateStatistic() {
@@ -124,23 +118,6 @@ final class StatisticViewController: UIViewController {
         let amount = completedTrackers.count
         titleLabel.text = String(amount)
         updateUI()
-    }
-    
-    private func addGradienBorder(to view: UIView, colors: [UIColor], width: CGFloat = 2) {
-        let gradient = CAGradientLayer()
-        gradient.frame = view.bounds
-        gradient.colors = colors.map { $0.cgColor }
-        gradient.startPoint = CGPoint(x: 0, y: 0.5)
-        gradient.endPoint = CGPoint(x: 1, y: 0.5)
-        
-        let shape = CAShapeLayer()
-        shape.lineWidth = width
-        shape.path = UIBezierPath(roundedRect: view.bounds, cornerRadius: 16).cgPath
-        shape.strokeColor = UIColor.black.cgColor
-        shape.fillColor = UIColor.clear.cgColor
-        gradient.mask = shape
-        
-        view.layer.addSublayer(gradient)
     }
 }
 

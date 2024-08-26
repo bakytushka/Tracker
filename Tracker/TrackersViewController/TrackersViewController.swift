@@ -178,9 +178,12 @@ final class TrackersViewController: UIViewController {
         navigationItem.title = NSLocalizedString("Trackers", comment: "Title for the main screen")
         
         let searchController = UISearchController(searchResultsController: nil)
+        searchController.searchResultsUpdater = self
         searchController.automaticallyShowsCancelButton = true
-        navigationItem.searchController = searchController
+        searchController.searchBar.delegate = self
         
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTrackerButton))
         navigationItem.leftBarButtonItem?.tintColor = UIColor.label
@@ -264,6 +267,32 @@ final class TrackersViewController: UIViewController {
             updateUI()
         } catch {
             print("Error: \(error)")
+        }
+    }
+    
+    private func searchTrackers(with searchText: String) {
+        if searchText.isEmpty {
+            applyFilter()
+            return
+        }
+        
+        currentCategories = categories.map { category in
+            let filteredTrackers = category.trackers.filter { tracker in
+                tracker.name.lowercased().contains(searchText.lowercased())
+            }
+            return TrackerCategory(title: category.title, trackers: filteredTrackers)
+        }.filter { !$0.trackers.isEmpty }
+        
+        updateStubVisibility(isSearching: !searchText.isEmpty)
+        collectionView.reloadData()
+    }
+    
+    private func updateStubVisibility(isSearching: Bool) {
+        let hasResults = !currentCategories.isEmpty
+        if hasResults {
+            hideStub()
+        } else {
+            showStub(isSearching: isSearching)
         }
     }
     
@@ -683,5 +712,19 @@ extension TrackersViewController: FilterViewControllerDelegate {
     func didSelectFilter(_ filter: TrackerFilter) {
         currentFilter = filter
         applyFilter()
+    }
+}
+
+extension TrackersViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let searchText = searchController.searchBar.text else { return }
+        searchTrackers(with: searchText)
+    }
+}
+extension TrackersViewController: UISearchBarDelegate {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
+        searchTrackers(with: "")
+        updateUI()
     }
 }

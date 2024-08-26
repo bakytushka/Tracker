@@ -52,10 +52,17 @@ final class TrackersViewCell: UICollectionViewCell {
         contentView.backgroundColor = .clear
         colorOfCellView.layer.cornerRadius = 16
         
-        [colorOfCellView, trackersNameLabel, trackersEmojiLabel, counterOfDaysLabel, completionButton].forEach {
+        [colorOfCellView, counterOfDaysLabel, completionButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview($0)
         }
+        
+        [trackersEmojiLabel, trackersNameLabel].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
+        
+        colorOfCellView.addSubview(trackersNameLabel)
+        colorOfCellView.addSubview(trackersEmojiLabel)
         
         NSLayoutConstraint.activate([
             colorOfCellView.topAnchor.constraint(equalTo: contentView.topAnchor),

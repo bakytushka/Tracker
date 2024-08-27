@@ -298,7 +298,6 @@ final class TrackersViewController: UIViewController {
     
     @objc func datePickerValueChanged(_ sender: UIDatePicker) {
         currentDate = sender.date
-        isSearching = false
         if currentFilter == .today {
             currentFilter = .all
         }
@@ -669,7 +668,6 @@ extension TrackersViewController {
 
 extension TrackersViewController {
     private func applyFilter() {
-        isSearching = true
         let calendar = Calendar.current
         let selectedWeekDay = calendar.component(.weekday, from: currentDate) - 1
         let selectedDayString = WeekDay(rawValue: selectedWeekDay)?.stringValue ?? ""

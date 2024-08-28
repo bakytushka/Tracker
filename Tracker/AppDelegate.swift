@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreData
+import YandexMobileMetrica
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -35,7 +36,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        return true
+        guard let configuration = YMMYandexMetricaConfiguration(apiKey: "140ed101-11c2-4d6b-b1bc-87d09be1aff2") else {
+                return true
+            }
+                
+            YMMYandexMetrica.activate(with: configuration)
+            return true
     }
     
     // MARK: UISceneSession Lifecycle

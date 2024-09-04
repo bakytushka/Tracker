@@ -26,6 +26,8 @@ class CategoryViewModel: CategoryViewModelProtocol {
     weak var delegate: CategorySelectionDelegate?
     
     private let categoryStore: TrackerCategoryStore
+    private let pinnedCategoryTitle = "Закрепленные"
+    
     private(set) var categories: [TrackerCategory] = [] {
         didSet {
             reloadData?(categories)
@@ -37,13 +39,28 @@ class CategoryViewModel: CategoryViewModelProtocol {
     
     init(categoryStore: TrackerCategoryStore) {
         self.categoryStore = categoryStore
+        createPinnedCategoryIfNeeded()
         loadCategories()
     }
+    
+    private func createPinnedCategoryIfNeeded() {
+            do {
+                let coreDataCategories = try categoryStore.fetchCategories()
+                if coreDataCategories.first(where: { $0.title == pinnedCategoryTitle }) == nil {
+                    let pinnedCategory = TrackerCategory(title: pinnedCategoryTitle, trackers: [])
+                    try categoryStore.addNewCategory(pinnedCategory)
+                }
+            } catch {
+                print("Failed to create pinned category: \(error)")
+            }
+        }
     
     func loadCategories() {
         do {
             let coreDataCategories = try categoryStore.fetchCategories()
-            categories = coreDataCategories.compactMap { categoryStore.updateTrackerCategory($0) }
+            categories = coreDataCategories
+                .compactMap { categoryStore.updateTrackerCategory($0) }
+                .filter { $0.title != pinnedCategoryTitle }
         } catch {
             print("Failed to load categories: \(error)")
         }
